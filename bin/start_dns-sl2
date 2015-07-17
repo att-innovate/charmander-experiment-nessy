@@ -1,3 +1,5 @@
 #!/bin/bash
 
-curl -s -X POST -T dns/dns.json -H "Accept: application/json" -H "Content-Type: application/json" 172.31.1.11:7075/client/task
+SCRIPT_HOME="$( cd "$( dirname "$0" )" && pwd )"
+
+curl -s -X POST -T $SCRIPT_HOME/../services/dns/dns-sl2.json -H "Accept: application/json" -H "Content-Type: application/json" 172.31.1.11:7075/client/task
