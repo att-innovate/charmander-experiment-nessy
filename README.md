@@ -1,2 +1,2 @@
-Charmander-Experiment: DNS - Nessy
-----------------------------------
+Charmander-Experiment: Nessy
+----------------------------
