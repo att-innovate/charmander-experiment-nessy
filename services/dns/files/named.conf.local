@@ -1,0 +1,12 @@
+zone "homer.ave" {
+ 	type master;
+ 	file "/etc/bind/zones/db.homer.ave";
+};
+
+# Our reverse Zone
+# Server IP 192.168.1.5
+
+zone "1.168.192.in-addr.arpa" {
+	type master;
+	file "/etc/bind/zones/db.192";
+};

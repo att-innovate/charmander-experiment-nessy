@@ -1,0 +1,9 @@
+{
+    "id":          "dns-sl2",
+    "dockerimage": "dns",
+    "mem":         "50",
+    "sla":         "singleton",
+    "nodename":    "slave2",
+    "networkmode": "host"
+
+}
