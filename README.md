@@ -49,6 +49,10 @@ We provide three sizes of queryfiles, the tiny one has 20 IP addresses, the smal
 
      ./experiments/nessy/bin/start_dnsperf-sl3-medium
 
+#### Now let's check the DNS performance result
+You can go to [Mesos](http://172.31.1.11:5050/#/), click on sandbox of the dnsperf-sl3-tiny(or small, or medium). In the sandbox, click stdout to see the output of dnsperf.
+
+You can also check the CAdvisor for [DNS server (slave 2)](http://slave2:31500/containers/)  and [DNS performave tool (slave 3)](http://slave3:31500/containers/) to see their usage. 
 
 #### That's it, let's clean up
 
