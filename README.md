@@ -41,10 +41,10 @@ This process will take some time the first time you run it.
 We provide three sizes of queryfiles, the tiny one has 20 IP addresses, the small one has 100, and the medium has 1500. Type one of the following commands with your chosen size to send queries to the DNS server. 
 
 	
-	 ./experiments/nessy/bin/start_dnsperf-sl3-small
+	 ./experiments/nessy/bin/start_dnsperf-sl3-tiny
 
     
-     ./experiments/nessy/bin/start_dnsperf-sl3-tiny
+     ./experiments/nessy/bin/start_dnsperf-sl3-small
 
 
      ./experiments/nessy/bin/start_dnsperf-sl3-medium
