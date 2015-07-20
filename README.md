@@ -37,9 +37,9 @@ This process will take some time the first time you run it.
     ./experiments/nessy/bin/start_dns-sl2
 
 
-
-
-
+#### Start DNS performance tool (Nominum) on slave 3. It will run a queryfile containning 100 IP addresses to measure the performance. 
+	
+	 ./experiments/nessy/bin/start_dnsperf-sl3-small
 
 
 #### That's it, let's clean up
