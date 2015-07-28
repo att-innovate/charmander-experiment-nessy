@@ -19,9 +19,9 @@ import (
 
 //var fileop = flag.String("d", "tiny_20", "datafile, default is tiny_20")
 
-var numUsers = flag.Int("u",10,"number of users(threads) sending queries, default is 10")
+var numUsers = flag.Int("u",5,"number of users(threads) sending queries, default is 10")
 var maxQueries = flag.Int("q",0,"max number of queries, default(or if you type 0) is infinite number of querys")
-var tlimit = flag.Int("-l",0,"max time limit, default(or if type 0) is infinite" )
+var tlimit = flag.Int("t",0,"max time limit, default(or if type 0) is infinite" )
 
 
 var numFailed = new(int32)
@@ -40,26 +40,23 @@ type Resolve struct {
 
 
 func (rs *Resolve) DoWork(workRoutine int) {
+	//simulate the delay, with normal distribution
+	delay := rs.rg.NormFloat64() * StdDev + Mean
+	time.Sleep(time.Duration(delay) * time.Millisecond)
 	message := new(dns.Msg)
 	message.SetQuestion(rs.ip,rs.dnstype)
 	client := new(dns.Client)
-	client.DialTimeout = 10000000
-	response , response_time, _ := client.Exchange(message, "172.31.2.12:53")
+	//client.DialTimeout = 10000000
+	response ,_, _ := client.Exchange(message, "172.31.2.12:53")
 	atomic.AddInt32(numQueries,1)
 	if response == nil {
 		atomic.AddInt32(numFailed,1)
 	}
 
-	fmt.Println(rs.ip, response_time)
-
-
-	//simulate the delay, with normal distribution
-	delay := rs.rg.NormFloat64() * StdDev + Mean
-	time.Sleep(time.Duration(delay) * time.Millisecond)
+	//fmt.Println("[",workRoutine,"]",rs.ip, response_time)
 
 
 
-	//fmt.Println("QueuedWork: ",  mw.WP.QueuedWork(),  "ActiveRoutines: ", mw.WP.ActiveRoutines())
 
 }
 
@@ -86,16 +83,6 @@ func main() {
 
 	shutdown := false
 
-	timeout := make(chan bool, 1)
-	/*if *tlimit != 0 {
-		go func(){
-
-			time.Sleep( time.Duration(*tlimit) * time.Second)
-			timeout <- true
-		}()
-	}*/
-
-
 
 	go func() {
 		count := 0
@@ -107,6 +94,7 @@ func main() {
 
 			for scanner.Scan() {
 				ip := scanner.Text()
+
 				scanner.Scan()
 
 				dnstype := type_to_uint(scanner.Text())
@@ -123,39 +111,32 @@ func main() {
 					fmt.Println("ERROR: %s\n", err)
 					time.Sleep(100 * time.Millisecond)
 				}
-
 				count++
-
 				if (*maxQueries!=0 && count >= *maxQueries) || shutdown == true {
 					fmt.Println("totol count is: ",count)
 					return
 				}
-			}
-			for{
+
 				if(workPool.QueuedWork() >= 5000){
-					time.Sleep(100 * time.Millisecond)
-				}else{
-					break
+					time.Sleep(1 * time.Second)
 				}
+				
 			}
 
 		}
-
-
-
-
 	}()
 
-	fmt.Println("Hit ENTER to exit.....")
+	if(*tlimit == 0) {
+		fmt.Println("Running time is set to be infinite, you can hit ENTER to exit.....")
+		reader := bufio.NewReader(os.Stdin)
+		reader.ReadString('\n')
+	}else{
 
-	select {
-		case  <- timeout:
-			fmt.Println("Time out, after ", *tlimit, "seconds")
-		default:
-			reader := bufio.NewReader(os.Stdin)
-			reader.ReadString('\n')
+		//reader := bufio.NewReader(os.Stdin)
+		//reader.ReadString('\n')
+		time.Sleep(time.Duration(*tlimit) * time.Second)
+		fmt.Println(" Time out, after ", *tlimit, "seconds.")
 	}
-
 
 
 	shutdown = true
@@ -165,7 +146,7 @@ func main() {
 
 
 	queryfile.Close()
-	fmt.Println("All done! Time lasts: xxx There are ", *numFailed ," failures in ", *numQueries," queries. ")
+	fmt.Println("All done! Running time: ",*tlimit,"There are ", *numFailed ," failures in ", *numQueries," queries. ")
 
 }
 

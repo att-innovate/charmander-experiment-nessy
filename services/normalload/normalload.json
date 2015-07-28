@@ -3,6 +3,5 @@
   "dockerimage": "normalload",
   "mem": "20",
   "reshuffleable": true,
-  "sla":         "singleton",
   "nodename": "slave3"
 }

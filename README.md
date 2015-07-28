@@ -29,7 +29,7 @@ This process will take some time the first time you run it.
 
 #### Start cAdvisor and Analytics-Stack
 
-    ./bin/start_cadvisor
+    ./bin/start_vector
     ./bin/start_analytics
 
 #### Start DNS server on slave2

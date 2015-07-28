@@ -1,8 +1,0 @@
-{
-    "id": "load_random",
-    "dockerimage": "load_random",
-    "mem": "21",
-    "reshuffleable": true,
-    "sla":         "singleton",
-    "nodename": "slave3"
-}
