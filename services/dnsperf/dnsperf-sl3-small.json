@@ -2,7 +2,6 @@
     "id":          "dnsperf-sl3-small",
     "dockerimage": "dnsperf",
     "mem":         "50",
-    "sla":         "singleton",
     "nodename":    "slave3",
     "arguments":   ["-s", "172.31.2.12", "-d", "../queryfiles/small_100", "-v","-l","600","-t","15"]
 }
