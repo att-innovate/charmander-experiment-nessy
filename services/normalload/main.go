@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"fmt"
 	"time"
@@ -8,127 +7,142 @@ import (
 	"github.com/miekg/dns"
 	"os"
 	"bufio"
-	"sync"
+
+	"github.com/goinggo/workpool"
+	"sync/atomic"
 	"flag"
+
 )
 
 
-type query struct {
+
+
+//var fileop = flag.String("d", "tiny_20", "datafile, default is tiny_20")
+
+var numUsers = flag.Int("u",20,"number of users(threads) sending queries, default is 10")
+var maxQueries = flag.Int("q",0,"max number of queries, default(or if you type 0) is infinite number of querys")
+var tlimit = flag.Int("t",0,"max time limit, default(or if type 0) is infinite" )
+
+
+var numFailed = new(int32)
+var numResponse = new(int32)
+
+const StdDev = 300.0
+const Mean = 500.0
+
+
+type Resolve struct {
 	ip string
 	dnstype uint16
+	WP *workpool.WorkPool
+	rg *rand.Rand
 }
-
-
-
-var fileop = flag.String("d", "tiny_20", "datafile")
-var numUsers = flag.Int("u",10,"number of users(threads) sending queries")
-
 
 
 func main() {
 	flag.Parse()
-	fmt.Println("the flag is : ",*fileop)
 	fmt.Println("the number of users is : ",*numUsers)
+	fmt.Println("the number of max queries is : ", *maxQueries, "(0 means infinite)")
+	fmt.Println("the number of max time in seconds is : ", *tlimit,"(0 means infinite)")
 
-
-
-
-	fmt.Println("Collecting queries from ",*fileop, ".........")
-
-	queries := collectQueries(*fileop)
-	numQueries := len(queries)
-	fmt.Println("Done collecting ",numQueries, " queries")
-
-	var wg sync.WaitGroup
-	results := make(chan string, len(queries))
-
-	//random delay with distribution set up
-	r := rand.New(rand.NewSource(99))
-	StdDev := 300.0
-	Mean := 500.0
-	fmt.Println("Start sending queries from multiple threads, with delay time normally distributed with Mean:",Mean, " and StdDev:",StdDev)
-
-	for _,query := range queries {
-		wg.Add(1)
-		go func (ip string, dnstype uint16,results chan string){
-			defer wg.Done()
-			resolve(ip, dnstype,results)
-		} (query.ip, query.dnstype,results)
-
-		//simulate the delay
-		delay := r.NormFloat64() * StdDev + Mean
-		time.Sleep(time.Duration(delay) * time.Millisecond)
-	}
-	wg.Wait()
-	close(results) //close channel
-	fmt.Println("Writing results to file dat.csv........")
-
-	//Write all the results into dat.cvs file
-	f, _ := os.Create("/Users/Karen/workArea/charmander/experiments/nessy/services/normalload/dat.csv")
-	for r := range results {
-		f.WriteString(r)
-	}
-	f.Sync()
-	f.Close()
-	fmt.Println("All done! Try typing: cat dat.csv")
-}
-
-func resolve(ip string, dnstype uint16,results chan string ){
-	message := new(dns.Msg)
-	message.SetQuestion(ip,dnstype)
-	client := new(dns.Client)
-	client.DialTimeout = 7
-	response, response_time, _ := client.Exchange(message, "172.31.2.12:53")
-	s := "success"
-	if response == nil {
-		s = "failed"
-	}
-
-	fmt.Println(ip, response_time)
-	str := ip + "\t" + s + "\t" + response_time.String() + "\n"
-	results <- str //push into channel
-}
-
-func collectQueries(fileop string) []query {
-
-	// Read file
-	//f, err := os.Open("/data/"+fileop)
-	f, err := os.Open("/Users/Karen/workArea/charmander/experiments/nessy/services/normalload/queryfiles/"+fileop)
+	//read the file and scan them into words
+	queryfile, err := os.Open("/normalload/queryfiles/medium_1500")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Err when opening file:", err)
 	}
 
-	//Create a slice to store these queries
-	size := 100 //default
-	if(fileop == "tiny_20"){size = 20} else if(fileop == "medium_1500") {size = 1500}
-	queries := make([]query,size)
 
-	//Scan file and split into words
-	scanner := bufio.NewScanner(f)
-	// Set the split function for the scanning operation.
-	scanner.Split(bufio.ScanWords)
+	//Random Generater
+	r := rand.New(rand.NewSource(99))
 
-	count := 0
+	workPool := workpool.New(*numUsers,10000)
+
+	shutdown := false
+
+	go func() {
+		count := 0
+		for {
+			_,_ = queryfile.Seek(0,0)
+			scanner := bufio.NewScanner(queryfile)
+			// Set the split function for the scanning operation.
+			scanner.Split(bufio.ScanWords)
+
+			for scanner.Scan() {
+				ip := scanner.Text()
+
+				scanner.Scan()
+
+				dnstype := type_to_uint(scanner.Text())
 
 
-	for scanner.Scan() {
-		ip := scanner.Text()
-		var dnstype uint16
-		scanner.Scan()
-		dnstype = type_to_uint(scanner.Text())
-		queries[count] = query{ip, dnstype}
-		count++
+				work := Resolve{
+					ip: ip,
+					dnstype: dnstype,
+					WP: workPool,
+					rg : r,
+				}
+
+				_ = workPool.PostWork("routine", &work)
+
+
+
+				count++
+				//quit of it reaches max number of queries or if it is shut down
+				if (*maxQueries!=0 && count >= *maxQueries) || shutdown == true {
+					fmt.Println("totol count is: ",count)
+					return
+				}
+
+				//if the queue is too long, wait for one sec before assign queires to workers
+				if(workPool.QueuedWork() >= 8000){
+					time.Sleep(1 * time.Second)
+				}
+			}
+		}
+	}()
+
+	if *maxQueries!=0 {
+		fmt.Println("Number of queries has reached to maximum: ", *maxQueries)
+	}else if *tlimit == 0 {
+		//fmt.Println("Running time is set to be infinite, you can hit ENTER to exit.....")
+		//reader := bufio.NewReader(os.Stdin)
+		//reader.ReadString('\n')
+		exit := make(chan bool) //wait forever!
+		<-exit
+	}else{
+		//sleep til time up
+		time.Sleep(time.Duration(*tlimit) * time.Second)
+		fmt.Println(" Time up, after ", *tlimit, "seconds.")
 	}
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading input:", err)
-	}
 
-	f.Close()
 
-	return queries
+	shutdown = true
+
+	fmt.Println("Shutting Down")
+	workPool.Shutdown("routine")
+
+	queryfile.Close()
+	fmt.Println("All done! Running time: ",*tlimit,"There are ", *numFailed ," failures in ", *numResponse," responses. ")
+
 }
 
+func (rs *Resolve) DoWork(workRoutine int) {
+	//simulate the delay, with normal distribution
+	delay := rs.rg.NormFloat64() * StdDev + Mean
+	time.Sleep(time.Duration(delay) * time.Millisecond)
+	message := new(dns.Msg)
+	message.SetQuestion(rs.ip,rs.dnstype)
+	client := new(dns.Client)
+	client.DialTimeout = 10000000
+	response ,response_time, _ := client.Exchange(message, "172.31.2.12:53")
+	atomic.AddInt32(numResponse,1)
+	if response == nil {
+		atomic.AddInt32(numFailed,1)
+	}
 
+	fmt.Println("[",workRoutine,"]",rs.ip, response_time)
+
+}
 
 func type_to_uint(str string) uint16{
 	switch str{

@@ -27,7 +27,7 @@ This command builds and creates and deploys Docker images for nessy.
 This process will take some time the first time you run it.
 
 
-#### Start cAdvisor and Analytics-Stack
+#### Start Vector and Analytics-Stack
 
     ./bin/start_vector
     ./bin/start_analytics

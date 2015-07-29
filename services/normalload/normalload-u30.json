@@ -1,0 +1,9 @@
+{
+  "id": "normalload",
+  "dockerimage": "normalload",
+  "mem": "100",
+  "cpus":        "1",
+  "reshuffleable": true,
+  "nodename": "slave3",
+  "arguments":   ["-u", "10"]
+}

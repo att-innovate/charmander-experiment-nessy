@@ -1,8 +1,8 @@
 FROM phusion/baseimage:0.9.16
 
 
-COPY ./normalload /usr/bin/
-RUN mkdir /data
-COPY ./files/tiny_20 /data/
+RUN mkdir -p /normalload/queryfiles
+COPY ./normalload /normalload/
+COPY ./queryfiles/medium_1500 /normalload/queryfiles/
 
-ENTRYPOINT ["/usr/bin/normalload"]
+ENTRYPOINT ["/normalload/normalload"]
