@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.9.16
+FROM phusion/baseimage:0.9.17
 
 COPY ./queryfiles/tiny_20 /queryfiles/ 
 COPY ./queryfiles/small_100 /queryfiles/ 
