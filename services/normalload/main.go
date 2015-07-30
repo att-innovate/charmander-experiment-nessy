@@ -16,14 +16,14 @@ import (
 var numUsers = flag.Int("u",10,"number of users(threads) sending queries, default is 10")
 var maxQueries = flag.Int("q",0,"max number of queries, default(or if you type 0) is infinite number of querys")
 var tlimit = flag.Int("t",0,"max time limit, default(or if type 0) is infinite" )
+var Mean = flag.Float("m",3000.0,"mean of the client's query rate distribution" )
+var StdDev = flag.Float("d",1500.0,"standard deviation of the client's query rate distribution" )
 
 
 var numQueries = new(int32)
 var numFailures = new(int32)
 var activeRoutines = new(int32)
 
-const StdDev = 1500.0
-const Mean = 3000.0 //average 3 sec
 
 func main() {
 	flag.Parse()
@@ -105,7 +105,6 @@ func doIt (lines[] string, r *rand.Rand, done chan bool, timeup chan bool) {
 
 
 	for{
-		//client := new(dns.Client)
 		for _, value := range lines {
 			select {
 			case <- done:
@@ -116,7 +115,6 @@ func doIt (lines[] string, r *rand.Rand, done chan bool, timeup chan bool) {
 
 				if strings.Count(value, "\t") != 1 { continue }
 				tokens := strings.Split(value, "\t")
-				//client := new(dns.Client)
 
 				message.SetQuestion(tokens[0], resolveDNSType(tokens[1]))
 
