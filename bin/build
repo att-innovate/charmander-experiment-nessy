@@ -10,6 +10,20 @@ cd $CHARMANDER_HOME
 # experiments folder
 EXPERIMENT_NAME=nessy
 
+# Build any Go-based Service
+for LAB_NODE in $(cat node_lab.txt)
+do
+    vagrant ssh -c "sudo /vagrant/bin/invm/build_experiments_go_service.sh $EXPERIMENT_NAME normalload" $LAB_NODE
+done
+
+#for ANALYTICS_NODE in $(cat node_analytics.txt)
+#do
+#    vagrant ssh -c "sudo /vagrant/bin/invm/build_experiments_go_service.sh $EXPERIMENT_NAME 1st_service_name" $ANALYTICS_NODE
+#    vagrant ssh -c "sudo /vagrant/bin/invm/build_experiments_go_service.sh $EXPERIMENT_NAME 2nd_service_name" $ANALYTICS_NODE
+#done
+
+
+# Build Docker Images
 for LAB_NODE in $(cat node_lab.txt)
 do
     vagrant ssh -c "sudo /vagrant/bin/invm/build_experiments_services.sh $EXPERIMENT_NAME" $LAB_NODE
