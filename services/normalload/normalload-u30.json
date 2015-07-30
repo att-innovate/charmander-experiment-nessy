@@ -5,5 +5,5 @@
   "cpus":        "1",
   "reshuffleable": true,
   "nodename": "slave3",
-  "arguments":   ["-u", "10"]
+  "arguments":   ["-u", "30"]
 }

@@ -49,10 +49,25 @@ We provide three sizes of queryfiles, the tiny one has 20 IP addresses, the smal
 
      ./experiments/nessy/bin/start_dnsperf-sl3-medium
 
-#### Now let's check the DNS performance result
-You can go to [Mesos](http://172.31.1.11:5050/#/), click on sandbox of the dnsperf-sl3-tiny(or small, or medium). In the sandbox, click stdout to see the output of dnsperf.
+#### Start Normal Load Emulation
+This will start a load emulation where 30 users send queries to the DNS server in a random pattern
 
-You can also check the CAdvisor for [DNS server (slave 2)](http://slave2:31500/containers/)  and [DNS performave tool (slave 3)](http://slave3:31500/containers/) to see their usage. 
+    ./experiments/nessy/bin/start_normalload-u30
+
+
+#### While Normal Load is running, you can also start a DDos attack
+This will start a Bonesi DDos attack to the DNS server
+
+    ./experiments/nessy/bin/start_bonesi-500
+    
+To stop the DDos attack, you can run
+
+    ./bin/kill_task bonesi
+
+#### Now let's check the data from DNS server
+You can go to [Mesos](http://172.31.1.11:5050/#/), click on sandbox of the dnsperf-sl3-*, or normalload-* ). In the sandbox, click stdout to see the output of dnsperf.
+
+You can also check the Vector for [DNS server (slave 2)](http://172.31.2.11:31790/#/?hostspec=localhost&host=172.31.2.12)  and [DNS performave tool (slave 3)](http://slave3:31500/containers/) to see their usage. 
 
 #### That's it, let's clean up
 
