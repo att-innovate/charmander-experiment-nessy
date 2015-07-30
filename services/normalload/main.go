@@ -85,12 +85,18 @@ func doIt ( r *rand.Rand, done chan bool, timeup chan bool) {
 
 
 	lines:=[]string{"homer.ave.	MX",
+					"homer.ave.	NS",
+					"homer.ave.	A",
 					"server.homer.ave.	A",
 					"host1.homer.ave.	A",
-					"host2.homer.ave.	A",
+					"host2.homer.ave.	CNAME",
 					"host3.homer.ave.	A",
-					"mail.homer.ave.	A",
+					"host3.homer.ave.	A",
+					"mail.homer.ave.	CNAME",
 					"server.homer.ave.	A",
+					"www.homer.ave.	CNAME",
+
+					"host2015.homer.ave.	AAAA", //random false one query
 					}
 					
 	size := len(lines)
