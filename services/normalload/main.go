@@ -22,8 +22,8 @@ var numQueries = new(int32)
 var numFailures = new(int32)
 var activeRoutines = new(int32)
 
-const StdDev = 500.0
-const Mean = 500.0
+const StdDev = 1500.0
+const Mean = 3000.0 //average 3 sec
 
 func main() {
 	flag.Parse()
@@ -74,15 +74,15 @@ func main() {
 	}else {
 		for{
 			select{
-			case <- timeup :
-			for *activeRoutines > 0 {
-				done <- true
-			}
+				case <- timeup :
+					for *activeRoutines > 0 {
+						done <- true
+					}
 
-			fmt.Println("All done! There are ", *numFailures ," Failures in ", *numQueries," Queries. ")
-			return
+					fmt.Println("All done! There are ", *numFailures ," Failures in ", *numQueries," Queries. ")
+					return
 
-			default :
+				default :
 			}
 		}
 	}
@@ -98,9 +98,14 @@ func timer(timeup chan bool){
 
 func doIt (lines[] string, r *rand.Rand, done chan bool, timeup chan bool) {
 
+	client := new(dns.Client)
+	client.DialTimeout = time.Duration(5) * time.Second
+	client.ReadTimeout = time.Duration(16) * time.Second
+	message := new(dns.Msg)
 
 
 	for{
+		//client := new(dns.Client)
 		for _, value := range lines {
 			select {
 			case <- done:
@@ -111,11 +116,11 @@ func doIt (lines[] string, r *rand.Rand, done chan bool, timeup chan bool) {
 
 				if strings.Count(value, "\t") != 1 { continue }
 				tokens := strings.Split(value, "\t")
+				//client := new(dns.Client)
 
-				message := new(dns.Msg)
 				message.SetQuestion(tokens[0], resolveDNSType(tokens[1]))
 
-				client := new(dns.Client)
+
 
 				response, responseTime, _ := client.Exchange(message, "172.31.2.12:53")
 				fmt.Println(tokens[0], tokens[1], responseTime)
