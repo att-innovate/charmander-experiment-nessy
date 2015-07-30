@@ -8,3 +8,24 @@ $TTL	604800
 ;
 	IN	NS	server.
 5	IN	PTR	server.homer.ave.
+6	IN	PTR	host1.homer.ave.
+7	IN	PTR	host1.homer.ave.
+7	IN	PTR	host1.homer.ave.
+9	IN	PTR	host1.homer.ave.
+10	IN	PTR	host3.homer.ave.
+11	IN	PTR	host3.homer.ave.
+12	IN	PTR	host3.homer.ave.
+13	IN	PTR	host3.homer.ave.
+14	IN	PTR	host3.homer.ave.
+15	IN	PTR	host3.homer.ave.
+16	IN	PTR	host3.homer.ave.
+17	IN	PTR	host3.homer.ave.
+18	IN	PTR	host3.homer.ave.
+19	IN	PTR	host3.homer.ave.
+20	IN	PTR	host3.homer.ave.
+21	IN	PTR	host3.homer.ave.
+22	IN	PTR	host3.homer.ave.
+23	IN	PTR	host3.homer.ave.
+24	IN	PTR	host3.homer.ave.
+25	IN	PTR	host3.homer.ave.
+26	IN	PTR	host3.homer.ave.

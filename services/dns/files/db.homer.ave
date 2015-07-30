@@ -1,4 +1,15 @@
-$TTL	604800
+; Serves following queries:
+; homer.ave. A
+; homer.ave. MX
+; server.homer.ave. A
+; www.homer.ave. A
+; mail.homer.ave. A
+; host1.homer.ave. A
+; host2.homer.ave. A
+; host3.homer.ave. A
+;
+;
+$TTL	60
 @	IN	SOA	server.homer.ave. admim.homer.ave. (
 			      2		; Serial
 			 604800		; Refresh
@@ -7,6 +18,30 @@ $TTL	604800
 			 604800 )	; Negative Cache TTL
 ;
 homer.ave.	IN	NS	server.homer.ave.
-homer.ave.	IN	A	192.168.1.5
-server		IN	A	192.168.1.5
-www		IN	CNAME	homer.ave.
+homer.ave.  IN  MX      10  mail.homer.ave.
+homer.ave.	IN	A	    192.168.1.5
+server	    IN	A	    192.168.1.5
+mail        IN  CNAME   server
+host1		IN	A	    192.168.1.6
+			IN	A	    192.168.1.7
+			IN	A	    192.168.1.8
+			IN	A	    192.168.1.9
+host2       IN  CNAME   host1
+host3       in  A       192.168.1.10
+			in  A       192.168.1.11
+			in  A       192.168.1.12
+			in  A       192.168.1.13
+			in  A       192.168.1.14
+			in  A       192.168.1.15
+			in  A       192.168.1.16
+			in  A       192.168.1.17
+			in  A       192.168.1.18
+			in  A       192.168.1.19
+			in  A       192.168.1.20
+			in  A       192.168.1.21
+			in  A       192.168.1.22
+			in  A       192.168.1.23
+			in  A       192.168.1.24
+			in  A       192.168.1.25
+			in  A       192.168.1.26
+www		    IN	CNAME	homer.ave.
