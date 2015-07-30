@@ -1,8 +1,7 @@
 {
-  "id": "normalload",
+  "id": "normalload-u30",
   "dockerimage": "normalload",
-  "mem": "100",
-  "cpus":        "1",
+  "mem": "20",
   "reshuffleable": true,
   "nodename": "slave3",
   "arguments":   ["-u", "30"]
