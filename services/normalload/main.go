@@ -7,6 +7,180 @@ import (
 	"github.com/miekg/dns"
 	"os"
 	"bufio"
+	"strings"
+	"sync/atomic"
+	"flag"
+)
+
+
+var numUsers = flag.Int("u",10,"number of users(threads) sending queries, default is 10")
+var maxQueries = flag.Int("q",0,"max number of queries, default(or if you type 0) is infinite number of querys")
+var tlimit = flag.Int("t",0,"max time limit, default(or if type 0) is infinite" )
+
+
+var numQueries = new(int32)
+var numFailures = new(int32)
+var activeRoutines = new(int32)
+
+const StdDev = 500.0
+const Mean = 500.0
+
+func main() {
+	flag.Parse()
+	fmt.Println("-u: the number of users is : ", *numUsers)
+	fmt.Println("-q: the number of max queries is : ", *maxQueries, "(0 means infinite)")
+	fmt.Println("-t: the number of max time in seconds is : ", *tlimit,"(0 means infinite)")
+
+	//read the file and scan them into words
+	queryfile, err := os.Open("./queryfiles/medium_1500")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Err when opening file:", err)
+	}
+	defer queryfile.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(queryfile)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	//Random Generater with seed 99
+	r := rand.New(rand.NewSource(99))
+
+	chunkSize := len(lines) / *numUsers
+
+	done := make(chan bool)
+	timeup := make (chan bool)
+
+	if *tlimit!= 0 {
+		go func (){
+			timer(timeup)
+		}()
+	}
+
+
+	for pt := 0;  pt < *numUsers; pt++ {
+		go func(lines[] string) {
+			doIt(lines,r,done,timeup)
+		}(lines[pt*chunkSize:((pt+1)*chunkSize)-1])
+		time.Sleep(200 * time.Millisecond)
+	}
+
+
+
+	if *tlimit == 0 && *maxQueries == 0 {
+		exit := make(chan bool) //wait forever!
+		<-exit
+	}else {
+		for{
+			select{
+			case <- timeup :
+			for *activeRoutines > 0 {
+				done <- true
+			}
+
+			fmt.Println("All done! There are ", *numFailures ," Failures in ", *numQueries," Queries. ")
+			return
+
+			default :
+			}
+		}
+	}
+
+
+}
+
+func timer(timeup chan bool){
+	time.Sleep(time.Duration(*tlimit) * time.Second)
+	fmt.Println(" Time up, after ", *tlimit, "seconds.")
+	timeup <- true
+}
+
+func doIt (lines[] string, r *rand.Rand, done chan bool, timeup chan bool) {
+
+
+
+	for{
+		for _, value := range lines {
+			select {
+			case <- done:
+				atomic.AddInt32(activeRoutines,-1)
+				return
+
+			default:
+
+				if strings.Count(value, "\t") != 1 { continue }
+				tokens := strings.Split(value, "\t")
+
+				message := new(dns.Msg)
+				message.SetQuestion(tokens[0], resolveDNSType(tokens[1]))
+
+				client := new(dns.Client)
+
+				response, responseTime, _ := client.Exchange(message, "172.31.2.12:53")
+				fmt.Println(tokens[0], tokens[1], responseTime)
+				atomic.AddInt32(numQueries,1)
+				if response == nil {
+					atomic.AddInt32(numFailures,1)
+				}
+
+				if *maxQueries!=0 && *numQueries >= int32(*maxQueries) {
+					fmt.Println("Quitting. Have reached the max number of queries: ", *maxQueries)
+					timeup <- true //notice the main thread and triggers the done for all the other threads
+					atomic.AddInt32(activeRoutines,-1)
+					return
+				}
+
+				delay := r.NormFloat64() * StdDev + Mean
+				time.Sleep(time.Duration(delay) * time.Millisecond)
+			}
+		}
+	}
+
+
+}
+
+func resolveDNSType(str string) uint16{
+	switch str{
+	case  "A":
+		return dns.TypeA
+	case  "MX":
+		return dns.TypeMX
+	case  "PTR":
+		return dns.TypePTR
+	case "AAAA":
+		return dns.TypeAAAA
+	}
+	return dns.TypeA
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Old Version
+/*package main
+
+import (
+	"fmt"
+	"time"
+	"math/rand"
+	"github.com/miekg/dns"
+	"os"
+	"bufio"
 
 	"github.com/goinggo/workpool"
 	"sync/atomic"
@@ -133,7 +307,8 @@ func (rs *Resolve) DoWork(workRoutine int) {
 	message := new(dns.Msg)
 	message.SetQuestion(rs.ip,rs.dnstype)
 	client := new(dns.Client)
-	client.DialTimeout = 10000000
+	client.SingleInflight = true
+	//client.DialTimeout = 100000000
 	response ,response_time, _ := client.Exchange(message, "172.31.2.12:53")
 	atomic.AddInt32(numResponse,1)
 	if response == nil {
@@ -156,4 +331,4 @@ func type_to_uint(str string) uint16{
 		return dns.TypeAAAA
 	}
 	return dns.TypeA
-}
+}*/
