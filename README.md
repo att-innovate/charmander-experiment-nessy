@@ -31,7 +31,10 @@ This process will take some time the first time you run it.
     ./experiments/nessy/bin/nessy_script
 
 
-Alternatively, you can run every step manuelly
+
+
+
+Alternatively, you can run every step manuelly. Follow the steps below:
 
 #### Start Vector and Analytics-Stack
 
