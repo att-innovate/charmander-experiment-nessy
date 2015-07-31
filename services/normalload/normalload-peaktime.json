@@ -4,5 +4,5 @@
   "mem": "20",
   "reshuffleable": true,
   "nodename": "slave3",
-  "arguments":   ["-u", "250","-m","1000","-d","900","-t","60"]
+  "arguments":   ["-u", "250","-m","1000","-d","900","-t","1000"]
 }
