@@ -1,5 +1,3 @@
-#this script lasts about 2 min
-
 ./bin/reset_cluster
 sleep 10
 echo "Start Vector"

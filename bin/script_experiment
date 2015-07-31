@@ -1,0 +1,41 @@
+./bin/reset_cluster
+sleep 5
+echo "Start Vector"
+./bin/start_vector
+echo "Start analytics"
+./bin/start_analytics
+echo "Start DNS server"
+./experiments/nessy/bin/start_dns-sl2
+
+sleep 5
+ 
+echo " "
+echo "Now you can open Vector and InfluxDB."
+read -p " When everything is ready, press ENTER to start simulation......."
+
+
+for ((; ;))
+do
+	sleep 6	#10min	3:55
+	date
+	./experiments/nessy/bin/start_normalload-u30
+
+	sleep 2   # 15min	 1:00
+	if [ $(($RANDOM%2)) -eq 0 ]; then 
+		date
+		./experiments/nessy/bin/start_bonesi-500
+	fi
+
+	sleep 6	#10min	1:10
+	date
+	./bin/kill_task bonesi
+	./experiments/nessy/bin/start_normalload-u30
+
+
+	sleep 1	#20min	1:30
+	date
+	./experiments/nessy/bin/start_normalload-u30
+
+
+done	
+ 
