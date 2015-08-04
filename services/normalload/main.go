@@ -170,6 +170,7 @@ func doIt ( r *rand.Rand, done chan bool, timeup chan bool) {
 			return
 
 		default:
+
 			delay := r.NormFloat64() * (*StdDev) + (*Mean)
 			time.Sleep(time.Duration(delay) * time.Millisecond)
 
@@ -177,14 +178,12 @@ func doIt ( r *rand.Rand, done chan bool, timeup chan bool) {
 
 			message.SetQuestion(tokens[0], resolveDNSType(tokens[1]))
 
-			_,_,response_time := client.Exchange(message, "172.31.2.12:53")
+			_,response_time,_ := client.Exchange(message, "172.31.2.12:53")
 			
-			atomic.AddInt32(numQueries,1)
-
 			if *verbose{
 				fmt.Println(tokens[0],tokens[1],response_time)
 			}
-			
+			atomic.AddInt32(numQueries,1)
 			if *maxQueries!=0 && *numQueries >= int32(*maxQueries) {
 				fmt.Println("Quitting. Have reached the max number of queries: ", *maxQueries)
 				timeup <- true //notice the main thread and triggers the done for all the other threads
