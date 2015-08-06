@@ -1,8 +1,0 @@
-{
-    "id":          "bonesi-500",
-    "dockerimage": "bonesi",
-    "mem":         "20",
-    "sla":         "singleton",
-    "nodename":    "slave3",
-    "arguments":   ["-p", "udp", "-r", "500", "-v", "172.31.2.12:53"]
-}
