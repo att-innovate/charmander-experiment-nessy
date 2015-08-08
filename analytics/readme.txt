@@ -1,1 +1,1 @@
-placeholder for analytics services/images
+copy the simple_experiment folder in your spark1.4.1 folder

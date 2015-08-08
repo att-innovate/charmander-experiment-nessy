@@ -36,6 +36,7 @@ do
 	sleep 600	#10min	1:10
 	date
 	./bin/kill_task bonesi
+	date
 	./experiments/nessy/bin/start_normalload-u30
 
 
@@ -71,6 +72,7 @@ do
 	sleep 900   # 15min 3:30
 	date
 	./bin/kill_task bonesi
+	date
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 900   # 15min 3:45
@@ -90,16 +92,19 @@ do
 	sleep 900   #15min	4:30
 	date
 	./experiments/nessy/bin/start_normalload-peaktime
+	date
 	./experiments/nessy/bin/start_normalload-u30
 
 	sleep 900   #15min	4:45
 	date
 	./experiments/nessy/bin/start_normalload-u100
+	date
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 1800	#30min	5:15
 	date
 	./experiments/nessy/bin/start_normalload-u30
+	date
 	./experiments/nessy/bin/start_normalload-peaktime
 
 	sleep 1800	#30min 5:45
@@ -116,6 +121,7 @@ do
 	sleep 300	#5min	6:00
 	date
 	./experiments/nessy/bin/start_normalload-u30
+	date
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 2700	#45min	6:45

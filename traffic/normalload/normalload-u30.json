@@ -3,6 +3,6 @@
   "dockerimage": "normalload",
   "mem": "20",
   "reshuffleable": true,
-  "nodetype": "traffic",
+  "nodename":    "slave4",
   "arguments": ["-u", "30", "-t","3600"]
 }

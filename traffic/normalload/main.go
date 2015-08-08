@@ -216,5 +216,3 @@ func resolveDNSType(str string) uint16{
 }
 	return dns.TypeA
 }
-
-
