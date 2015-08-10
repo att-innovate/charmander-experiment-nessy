@@ -1,0 +1,100 @@
+./bin/reset_cluster
+
+sleep 10
+
+echo "Start Vector"
+./bin/start_vector
+echo "Start analytics"
+./bin/start_analytics
+echo "Start DNS server"
+./experiments/nessy/bin/start_dns-sl2
+
+sleep 10
+ 
+echo " "
+echo "Now you can open Vector and InfluxDB."
+read -p " When everything is ready, press any key to start simulation......."
+
+
+
+
+	date +%s
+	./experiments/nessy/bin/start_normalload-u30
+	
+ 
+	sleep 180  # 0:03
+	date +%s
+	./experiments/nessy/bin/start_normalload-u100
+	
+
+	
+
+	sleep 180	#0:06
+	date +%s
+	./experiments/nessy/bin/start_normalload-u100
+
+
+	sleep 120  	#0:08
+	date +%s
+	./experiments/nessy/bin/start_bonesi-500
+
+	sleep 60  	#0:09
+	date +%s
+	./experiments/nessy/bin/start_normalload-peaktime
+
+	sleep 60 	#0:10
+	date +%s
+	./bin/kill_task bonesi
+
+
+	sleep 120 	#0:12
+	date +%s
+	./bin/kill_task normalload-peaktime
+	date +%s
+	./experiments/nessy/bin/start_normalload-u100
+
+	sleep 60 	#0:13
+	date +%s
+	./experiments/nessy/bin/start_bonesi-500
+
+	sleep 120 	#0:15
+	date +%s
+	./bin/kill_task bonesi
+	date +%s
+	./bin/kill_task normalload-u100
+
+	sleep 120 	#0:17
+	date +%s
+	./experiments/nessy/bin/start_bonesi-500
+
+	sleep 120 	#0:19
+	date +%s
+	./bin/kill_task bonesi
+
+	sleep 120	#0:21
+	date +%s
+	./experiments/nessy/bin/start_normalload-u100
+
+	sleep 180	#0:24
+	date +%s
+	./experiments/nessy/bin/start_normalload-u100
+
+	sleep 120	#0:26
+	date +%s
+	./experiments/nessy/bin/start_bonesi-500
+
+	sleep 60 	#0:27
+	date +%s
+	./experiments/nessy/bin/start_normalload-peaktime
+
+
+	sleep 60 	#0:28
+	date +%s
+	./bin/kill_task bonesi
+
+	sleep 120	#0:30
+	echo "30 min simulation finished kill everything"
+	./bin/kill_task norm
+
+
+read -p " When finish collecting data, press any key to quit simulation......."

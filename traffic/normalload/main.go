@@ -5,10 +5,29 @@ import (
 	"time"
 	"math/rand"
 	"github.com/miekg/dns"
-	"strings"
+	//"strings"
 	"sync/atomic"
 	"flag"
 )
+
+type query struct{
+	ip string
+	dnstype uint16
+}
+
+
+//The 2 DNS servers address. When they are both up, queries will be equally distributed to them
+type dnsserver struct {
+    addr string
+    up  bool
+}
+
+const checkInterval = 6
+
+var dns1 = dnsserver{"172.31.2.12:53",false}
+var dns2 = dnsserver{"172.31.2.13:53",false}
+var servers = [...]dnsserver{dns1,dns2} //array of servers, in this experiment we have 2 dns servers
+
 
 //Advanced settings for porportionally increasing/decreasing users during a period of time. 
 var varyNumUsers = flag.Int("vu",0,"You can specify the number of users(threads) to increase or decrease by the end of varyTime, has to specify -vt varyTime and numUsers")
@@ -26,6 +45,8 @@ var verbose = flag.Bool("verbose",false,"Print out information about each query 
 
 var activeRoutines = new(int32)
 var numQueries = new(int32)
+
+
 
 func main() {
 	flag.Parse()
@@ -57,7 +78,10 @@ func main() {
 	timeup := make (chan bool)
 	varyThread := make (chan bool)
 
-
+	go func (){
+		checkServers(done)
+	}()
+	
 	go func (){
 		timer(timeup,varyThread)
 	}()
@@ -91,7 +115,7 @@ func main() {
 					}
 					
 				case <- timeup :
-					for *activeRoutines > 0 {
+					for *activeRoutines > 0 { //also need to terminate checkServer
 						done <- true
 					}
 					return
@@ -103,6 +127,31 @@ func main() {
 
 
 }
+
+func checkServers(done chan bool){
+	client := new(dns.Client)
+	client.DialTimeout = time.Duration(5) * time.Second
+	client.ReadTimeout = time.Duration(5) * time.Second
+	message := new(dns.Msg)
+
+	for{
+
+			message.SetQuestion("homer.ave.", dns.TypeA)	
+			for i := range servers{
+				res,_,_ := client.Exchange(message, servers[i].addr)	
+				servers[i].up = (res!=nil)
+				
+				if *verbose {
+					fmt.Println("dns-slv",i+2,"up is: ",servers[i].up)
+				}
+			}		
+			
+			time.Sleep(time.Duration(checkInterval) * time.Second) //check every minute
+		
+	}
+
+}
+
 
 func timer(timeup chan bool, varyThread chan bool){
 	runtime:=0
@@ -138,27 +187,28 @@ func doIt ( r *rand.Rand, done chan bool, timeup chan bool) {
 	if *verbose {
 		fmt.Println("Added a thread, now have activeRoutines: ", *activeRoutines)
 	}
+	
 	client := new(dns.Client)
 	client.DialTimeout = time.Duration(5) * time.Second
 	client.ReadTimeout = time.Duration(5) * time.Second
 	message := new(dns.Msg)
 
-	lines:=[]string{"homer.ave.	MX",
-					"homer.ave.	NS",
-					"homer.ave.	A",
-					"server.homer.ave.	A",
-					"host1.homer.ave.	A",
-					"host2.homer.ave.	CNAME",
-					"host3.homer.ave.	A",
-					"host3.homer.ave.	A",
-					"mail.homer.ave.	CNAME",
-					"server.homer.ave.	A",
-					"www.homer.ave.	CNAME",
-
-					"host2015.homer.ave.	AAAA", //random false one query
+	queries:=[]query{ {"homer.ave.", dns.TypeMX},
+					{"homer.ave.", dns.TypeNS},
+					{"homer.ave.", dns.TypeA},
+					{"server.homer.ave.", dns.TypeA},
+					{"host1.homer.ave.", dns.TypeA},
+					{"host2.homer.ave.", dns.TypeCNAME},
+					{"host3.homer.ave.", dns.TypeA},
+					{"host3.homer.ave.", dns.TypeA},
+					{"mail.homer.ave.", dns.TypeCNAME},
+					{"server.homer.ave.", dns.TypeA},
+					{"www.homer.ave.", dns.TypeCNAME},
+					{"host2015.homer.ave.", dns.TypeAAAA}, //random false one query
 					}
 					
-	size := len(lines)
+	size := len(queries)
+	//addr := nil
 
 	for{
 		select {
@@ -170,49 +220,41 @@ func doIt ( r *rand.Rand, done chan bool, timeup chan bool) {
 			return
 
 		default:
-
-			delay := r.NormFloat64() * (*StdDev) + (*Mean)
-			time.Sleep(time.Duration(delay) * time.Millisecond)
-
-			tokens := strings.Split(lines[r.Intn(size)], "\t")
-
-			message.SetQuestion(tokens[0], resolveDNSType(tokens[1]))
-
-			_,response_time,_ := client.Exchange(message, "172.31.2.12:53")
-			
-			if *verbose{
-				fmt.Println(tokens[0],tokens[1],response_time)
-			}
-			atomic.AddInt32(numQueries,1)
-			if *maxQueries!=0 && *numQueries >= int32(*maxQueries) {
-				fmt.Println("Quitting. Have reached the max number of queries: ", *maxQueries)
-				timeup <- true //notice the main thread and triggers the done for all the other threads
-				if *verbose {
-					fmt.Println("Deleteed a thread, now have activeRoutines: ", *activeRoutines)
+			for i := range servers{
+				if !servers[i].up {
+					continue      // If this server is down, go check next server
 				}
-				atomic.AddInt32(activeRoutines,-1)
-				return
+
+				delay := r.NormFloat64() * (*StdDev) + (*Mean)
+				time.Sleep(time.Duration(delay) * time.Millisecond)
+				
+				//tokens := strings.Split(lines[r.Intn(size)], "\t")
+				randomQuery := queries[r.Intn(size)]
+				message.SetQuestion(randomQuery.ip, randomQuery.dnstype)
+				
+			
+				_,response_time,_ := client.Exchange(message, servers[i].addr)			
+				
+				if *verbose{
+					fmt.Println("dns-slv",i+2," ",randomQuery.ip,response_time)
+				}
+
+				atomic.AddInt32(numQueries,1)
+				if *maxQueries!=0 && *numQueries >= int32(*maxQueries) {
+					fmt.Println("Quitting. Have reached the max number of queries: ", *maxQueries)
+					timeup <- true //notice the main thread and triggers the done for all the other threads
+					if *verbose {
+						fmt.Println("Deleteed a thread, now have activeRoutines: ", *activeRoutines)
+					}
+					atomic.AddInt32(activeRoutines,-1)
+					return
+				}
 			}
+			
 
 		}
 
 	}
 
 
-}
-
-func resolveDNSType(str string) uint16{
-	switch str{
-	case  "A":
-		return dns.TypeA
-	case  "MX":
-		return dns.TypeMX
-	case  "PTR":
-		return dns.TypePTR
-	case "AAAA":
-		return dns.TypeAAAA
-    case "CNAME":
-		return dns.TypeCNAME
-}
-	return dns.TypeA
 }
