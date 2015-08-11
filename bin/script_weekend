@@ -16,124 +16,125 @@ echo "Now you can open Vector and InfluxDB."
 read -p " When everything is ready, press any key to start simulation......."
 
 
-for ((; ;))
+for i in 1 2
 do
-	date
+	echo "A cycle begins!"
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 	
 
 	sleep 2700  # 45min  0:45
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
 	
 
 	sleep 900   # 15min	 1:00
 	if [ $(($RANDOM%2)) -eq 0 ]; then 
-		date
+		date +%s
 		./experiments/nessy/bin/start_bonesi-500
 	fi
 
 	sleep 600	#10min	1:10
-	date
+	date +%s
 	./bin/kill_task bonesi
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 
 	sleep 1200 	#20min	1:30
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 
 	sleep 1800 	#30min	2:00
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-peaktime
 
 	
 	sleep 900   # 15min	 2:15
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 
 	sleep 900   # 15min  2:30
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 	sleep 900   # 15min  2:45
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 	sleep 1800 	#30min	3:15
 	if [ $(($RANDOM%2)) -eq 0 ]; then 
-		date
+		date +%s
 		./experiments/nessy/bin/start_bonesi-500
 	fi
 
 	sleep 900   # 15min 3:30
-	date
+	date +%s
 	./bin/kill_task bonesi
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 900   # 15min 3:45
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
 
 
 	sleep 600	#10min	3:55
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 
 	sleep 1200	#20min  4:15
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-peaktime
 
 	sleep 900   #15min	4:30
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-peaktime
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
 
 	sleep 900   #15min	4:45
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 1800	#30min	5:15
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-peaktime
 
 	sleep 1800	#30min 5:45
 	if [ $(($RANDOM%2)) -eq 0 ]; then 
-		date
+		date +%s
 		./experiments/nessy/bin/start_bonesi-500
 	fi
 
 	sleep 600	#10min	5:55
-	date
+	date +%s
 	./bin/kill_task bonesi
 
 
 	sleep 300	#5min	6:00
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u30
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 2700	#45min	6:45
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-peaktime
 
 	sleep 1800	#30min	7:15
-	date
+	date +%s
 	./experiments/nessy/bin/start_normalload-u100
 
 	sleep 2700	#45min	8:00
-	date
+	date +%s
 	echo "A cycle completes!"
 
 

@@ -1,0 +1,15 @@
+Copy this whole smart_scaling folder into your spark-1.4.1 folder
+
+
+Make sure you have installed the sbt assembly (https://github.com/sbt/sbt-assembly)
+
+To start a interactive shell:
+
+	../bin/spark-shell --jars $(echo ./lib/*.jar | tr ' ' ',')
+
+To start a program:
+
+(Make sure you have installed the sbt assembly (https://github.com/sbt/sbt-assembly))
+
+	sbt assembly
+	../bin/spark-submit --class "MaxUsage" --master local[*] ./target/scala-2.10/spark-experiment-assembly-1.0.jar
