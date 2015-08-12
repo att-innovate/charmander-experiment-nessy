@@ -1,8 +1,8 @@
 {
-  "id": "normalload-u100",
+  "id": "normalload-u70",
   "dockerimage": "normalload",
   "mem": "20",
   "reshuffleable": true,
   "nodetype": "traffic",
-  "arguments": ["-u", "100","-m","1000","-d","800"]
+  "arguments": ["-u", "70","-m","1000","-d","800"]
 }

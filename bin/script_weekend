@@ -16,8 +16,7 @@ echo "Now you can open Vector and InfluxDB."
 read -p " When everything is ready, press any key to start simulation......."
 
 
-for i in 1 2
-do
+
 	echo "A cycle begins!"
 	date +%s
 	./experiments/nessy/bin/start_normalload-u30
@@ -138,5 +137,3 @@ do
 	echo "A cycle completes!"
 
 
-done	
- 
