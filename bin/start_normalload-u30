@@ -3,6 +3,3 @@
 SCRIPT_HOME="$( cd "$( dirname "$0" )" && pwd )"
 
 curl -s -X POST -T $SCRIPT_HOME/../traffic/normalload/normalload-u30.json -H "Accept: application/json" -H "Content-Type: application/json" 172.31.1.11:7075/client/task
-
-NUM_USERS=$(($NUM_USERS+30))
-echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
