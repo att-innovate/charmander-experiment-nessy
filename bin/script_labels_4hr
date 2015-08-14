@@ -35,7 +35,7 @@ do
 	date 
 	./bin/kill_task bonesi
 	DDOS=0
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , 0 , $DDOS >> logfile.csv
 
 	sleep 100 
 	date 
@@ -58,20 +58,20 @@ do
 	date
 	./bin/kill_task bonesi
 	DDOS=0
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , 0 , $DDOS >> logfile.csv
 
 
 	sleep 400  	#0:50
 	date
 	./bin/kill_task normalload-u100
 	NUM_USERS=$(($NUM_USERS-200))
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , -200 , $DDOS >> logfile.csv
 
 	sleep 600  	#1:00
 	date
 	./bin/kill_task normalload-u70
 	NUM_USERS=$(($NUM_USERS-70))
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , -70 , $DDOS >> logfile.csv
 	
 
 	sleep 600
@@ -81,7 +81,7 @@ do
 	sleep 200
 	./bin/kill_task bonesi
 	DDOS=0
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , 0 , $DDOS >> logfile.csv
 
 
 
@@ -107,7 +107,7 @@ do
 	date 
 	./bin/kill_task bonesi
 	DDOS=0
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , 0 , $DDOS >> logfile.csv
 
 	
 	sleep 800 
@@ -124,21 +124,21 @@ do
 	date 
 	./bin/kill_task normalload-u200
 	NUM_USERS=$(($NUM_USERS-400))
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , -400 , $DDOS >> logfile.csv
 
 	
 	sleep 100 
 	date
 	./bin/kill_task bonesi
 	DDOS=0
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , 0 , $DDOS >> logfile.csv
 
 
 	sleep 1100 	#2:30
 	date 
 	./bin/kill_task normalload-u70
 	NUM_USERS=$(($NUM_USERS-70))
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , -70 , $DDOS >> logfile.csv
 	
 
 	sleep 1800 	#3:00
@@ -156,11 +156,11 @@ do
 	./bin/kill_task bonesi
 	NUM_USERS=$(($NUM_USERS-70))
 	DDOS=0
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , -70 , $DDOS >> logfile.csv
 
 	sleep 2400	#4:00
 	date 
-	echo $(date +%s) , $NUM_USERS , $DDOS >> logfile.csv
+	echo $(date +%s) , 0 , $DDOS >> logfile.csv
 	./bin/kill_task normalload
 
 	echo "4 Hour Simulation finished, start a new cycle"
