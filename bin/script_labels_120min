@@ -1,0 +1,146 @@
+#!/bin/bash
+
+NUM_USERS=0
+DDOS=0
+CSV_FILE=logfile.csv
+
+
+function outputToCsv(){
+	echo $(date +%s),$NUM_USERS,$DDOS >> $CSV_FILE
+}
+
+./bin/reset_cluster
+rm $CSV_FILE
+
+sleep 10
+
+echo "Start Vector"
+./bin/start_vector
+echo "Start analytics"
+./bin/start_analytics
+echo "Start DNS server"
+./experiments/nessy/bin/start_dns-sl2
+
+sleep 10
+ 
+echo " "
+echo "Now you can open Vector and InfluxDB."
+read -p " When everything is ready, press any key to start simulation......."
+
+for (( i=1; i <= 5; i++ ))
+	date
+	./experiments/nessy/bin/start_normalload-u30
+	let "NUM_USERS = $NUM_USERS+30"
+	outputToCsv
+
+
+	sleep 180  # 0:03
+	date
+	./experiments/nessy/bin/start_normalload-u100
+	let "NUM_USERS = $NUM_USERS+100"
+	outputToCsv
+
+
+	sleep 180	#0:06
+	date
+	./experiments/nessy/bin/start_normalload-u100
+	let "NUM_USERS = $NUM_USERS+100"
+	outputToCsv
+
+
+	sleep 120  	#0:08
+	date
+	./experiments/nessy/bin/start_bonesi-500
+	DDOS=1
+	outputToCsv
+
+	sleep 60  	#0:09
+	date
+	./experiments/nessy/bin/start_normalload-u200
+	let "NUM_USERS = $NUM_USERS+200"
+	outputToCsv
+
+	sleep 60 	#0:10
+	date
+	./bin/kill_task bonesi
+	DDOS=0
+	outputToCsv
+
+	sleep 120 	#0:12
+	date
+	./bin/kill_task normalload-u200
+	let "NUM_USERS = $NUM_USERS-200"
+	outputToCsv
+
+	date
+	./experiments/nessy/bin/start_normalload-u100
+	let "NUM_USERS = $NUM_USERS+100"
+	outputToCsv
+
+	sleep 60 	#0:13
+	date
+	./experiments/nessy/bin/start_bonesi-500
+	DDOS=1
+	outputToCsv
+
+	sleep 120 	#0:15
+	date
+	./bin/kill_task bonesi
+	DDOS=0
+	outputToCsv
+	date
+	./bin/kill_task normalload-u100
+	let "NUM_USERS = $NUM_USERS-300"
+	outputToCsv
+
+	sleep 120 	#0:17
+	date
+	./experiments/nessy/bin/start_bonesi-500
+	DDOS=1
+	outputToCsv
+
+	sleep 120 	#0:19
+	date
+	./bin/kill_task bonesi
+	DDOS=0
+	outputToCsv
+
+	sleep 120	#0:21
+	date
+	./experiments/nessy/bin/start_normalload-u100
+	let "NUM_USERS = $NUM_USERS+100"
+	outputToCsv
+
+	sleep 180	#0:24
+	date
+	./experiments/nessy/bin/start_normalload-u100
+	let "NUM_USERS = $NUM_USERS+100"
+	outputToCsv
+
+	sleep 120	#0:26
+	date
+	./experiments/nessy/bin/start_bonesi-500
+	DDOS=1
+	outputToCsv
+
+	sleep 60 	#0:27
+	date
+	./experiments/nessy/bin/start_normalload-u200
+	let "NUM_USERS = $NUM_USERS+200"
+	outputToCsv
+
+	sleep 60 	#0:28
+	date
+	./bin/kill_task bonesi
+	DDOS=0
+	outputToCsv
+
+	sleep 120	#0:30
+	date
+	./bin/kill_task normal
+	NUM_USERS=0
+	outputToCsv
+	echo "30 min simulation finished, start a new cycle"
+done
+
+read -p " When finish collecting data, press any key to quit simulation......."
