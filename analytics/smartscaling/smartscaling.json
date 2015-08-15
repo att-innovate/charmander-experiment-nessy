@@ -1,0 +1,9 @@
+{
+    "id":          "smartscaling",
+    "dockerimage": "smartscaling",
+    "mem":         "400",
+    "sla":         "singleton",
+    "nodetype":    "analytics",
+    "notmetered":  true
+
+}

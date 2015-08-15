@@ -1,4 +1,4 @@
-Copy this whole smart_scaling folder into your spark-1.4.1 folder
+Copy this whole smartscaling folder into your spark-1.4.1 folder
 
 
 Make sure you have installed the sbt assembly (https://github.com/sbt/sbt-assembly)

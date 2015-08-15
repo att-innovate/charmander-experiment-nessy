@@ -1,4 +1,4 @@
-name := "spark-experiment"
+name := "smartscaling"
 
 version := "1.0"
 

@@ -2,7 +2,7 @@
 .DS_Store
 .vagrant
 .idea
-project
+project/project
 target
 *.iml
 

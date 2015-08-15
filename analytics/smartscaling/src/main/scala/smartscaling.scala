@@ -1,6 +1,4 @@
 
-// ../spark/bin/spark-submit --class "MaxUsage" --master local[*]  --jars lib/charmander-utils_2.10-1.0.jar target/scala-2.10/max-usage_2.10-1.0.jar
-
 import scala.collection.mutable
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -9,20 +7,17 @@ import org.apache.spark.streaming._
 import org.json4s.jackson.JsonMethods
 import org.att.charmander.CharmanderUtils
 
-//for the delete request
 import scalaj.http._
 
 
 
 
-case class MemoryUsage(timestamp: BigDecimal, memory: BigDecimal)
-
-object MaxUsage {
+object SmartScaling {
 
   def main(args: Array[String]) {
 
     // Create the contexts
-    val conf = new SparkConf().setAppName("Charmander-Spark")
+    val conf = new SparkConf().setAppName("Charmander-Nessy")
     val sc = new SparkContext(conf)
     val ssc = new StreamingContext(sc, Seconds(2))
 
@@ -43,19 +38,19 @@ object MaxUsage {
         println("dns-sl2:" + rdd.first())
 
         def isDDOS(rdd: RDD[List[BigDecimal]]): Boolean=
-    {
-        rdd.filter(w=> w(2).asInstanceOf[BigInt] > high_ave_in).count > 30 && rdd.filter(w=> w(2).asInstanceOf[BigInt] > w(3).asInstanceOf[BigInt]).count > 20   //if in_bytes > out_bytes
-    }
+        {
+            rdd.filter(w=> w(2).asInstanceOf[BigInt] > high_ave_in).count > 30 && rdd.filter(w=> w(2).asInstanceOf[BigInt] > w(3).asInstanceOf[BigInt]).count > 20   //if in_bytes > out_bytes
+        }
  
         def shouldScaleUp(rdd: RDD[List[BigDecimal]]): Boolean=
-    {
-        rdd.filter(w=> w(2).asInstanceOf[BigInt] > high_ave_in).count > 40 && rdd.filter(w=>w(3).asInstanceOf[BigInt] > high_ave_out).count > 40
-    }
+        {
+            rdd.filter(w=> w(2).asInstanceOf[BigInt] > high_ave_in).count > 40 && rdd.filter(w=>w(3).asInstanceOf[BigInt] > high_ave_out).count > 40
+        }
 
         def shouldScaleDown(rdd: RDD[List[BigDecimal]]): Boolean=
-    {
-        rdd.filter(w=> w(2).asInstanceOf[BigInt] < high_ave_in).count > 60 && rdd.filter(w=>w(3).asInstanceOf[BigInt] < high_ave_out).count > 60
-    }
+        {
+            rdd.filter(w=> w(2).asInstanceOf[BigInt] < high_ave_in).count > 60 && rdd.filter(w=>w(3).asInstanceOf[BigInt] < high_ave_out).count > 60
+        }
 
         if(isDDOS(rdd)){  //Naive DDos detection: in_bytes>out_bytes for more than 5 cases
           println("DDos Attack. Shutting down bonesi-500")
@@ -65,7 +60,7 @@ object MaxUsage {
 
          if(!twoServersUp && shouldScaleUp(rdd)){  //Naive DDos detection: in_bytes>out_bytes for more than 5 cases
           println("Should Scale Up dns-sl3")
-          val data= scala.io.Source.fromFile("/Users/Karen/workArea/charmander/experiments/nessy/services/dns/dns-sl3.json").mkString 
+          val data= scala.io.Source.fromFile("/files/dns-sl3.json").mkString
           println(Http("http://172.31.1.11:7075/client/task").postData(data).header("content-type", "application/json").asString)
           twoServersUp = true
         }
@@ -92,21 +87,13 @@ object MaxUsage {
 
 
     while (true) {
-      val (col, rdd) =  CharmanderUtils.getRDDAndColumnsForQuery(sc,"charmander-dc","select network_in_bytes,network_out_bytes from network where interface_name='eth1' AND hostname='slave2' limit 100 ")
-      //val (index_time,index_inbytes,index_outbytes) = (col.indexOf("time"), col.indexOf("network_in_bytes"), col.indexOf("network_out_bytes"))
-      //network_rddQueue += rdd.map(rdd => List(BigDecimal(rdd(index_time).asInstanceOf[BigInt]),BigDecimal(rdd(index_inbytes).asInstanceOf[BigInt]),BigDecimal(rdd(index_outbytes).asInstanceOf[BigInt])))
+      val (col, rdd) =  CharmanderUtils.getRDDAndColumnsForQuery(sc,CharmanderUtils.VECTOR_DB,"select network_in_bytes,network_out_bytes from network where interface_name='eth1' AND hostname='slave2' limit 100 ")
       rddQueue_1 += rdd
 
-      val (col_2, rdd_2) =  CharmanderUtils.getRDDAndColumnsForQuery(sc,"charmander-dc","select network_in_bytes,network_out_bytes from network where interface_name='eth1' AND hostname='slave3' limit 100 ")
+      val (col_2, rdd_2) =  CharmanderUtils.getRDDAndColumnsForQuery(sc,CharmanderUtils.VECTOR_DB,"select network_in_bytes,network_out_bytes from network where interface_name='eth1' AND hostname='slave3' limit 100 ")
       rddQueue_2 += rdd_2
-      /*val (col_2,rdd_2) = CharmanderUtils.getRDDAndColumnsForQuery(sc,"charmander-dc","select * from stats where hostname='slave2' limit 100 ")
-      val (index_time_2,index_cpu_user,index_cpu_sys,index_mem) = (col_2.indexOf("time"), col_2.indexOf("cpu_usage_user"), col_2.indexOf("cpu_usage_system"), col_2.indexOf("memory_usage"))
-      stats_rddQueue += rdd_2.map(rdd_2 => List(BigDecimal(rdd_2(index_time_2).asInstanceOf[BigInt]),BigDecimal(rdd_2(index_mem).asInstanceOf[BigInt]),BigDecimal(rdd_2(index_cpu_user).asInstanceOf[BigInt]),BigDecimal(rdd_2(index_cpu_sys).asInstanceOf[BigInt])))
-      */
 
       Thread.sleep(10000)
-
-
     }
 
   }
