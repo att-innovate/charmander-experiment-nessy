@@ -28,6 +28,7 @@ echo "Now you can open Vector and InfluxDB."
 read -p " When everything is ready, press any key to start simulation......."
 
 for (( i=1; i <= 5; i++ ))
+do
 	date
 	./experiments/nessy/bin/start_normalload-u30
 	let "NUM_USERS = $NUM_USERS+30"
