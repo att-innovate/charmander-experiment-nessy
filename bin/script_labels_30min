@@ -142,4 +142,7 @@ NUM_USERS=0
 outputToCsv
 echo "30 min simulation finished, start a new cycle"
 
+sleep 5
+./bin/kill_task datacoll
+
 read -p " When finish collecting data, press any key to quit simulation......."
