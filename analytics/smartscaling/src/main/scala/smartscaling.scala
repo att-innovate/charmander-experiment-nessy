@@ -16,6 +16,16 @@ object SmartScaling {
 
   def main(args: Array[String]) {
 
+    // set the jsonDir, the directory that contains the json files
+    // for starting containers
+    var jsonDir = "/files"
+
+    if (args.length == 2 && args(0) == "--jsonDir") {
+        jsonDir = args(1)
+    }
+
+    println("jsonDir: " + jsonDir)
+
     // Create the contexts
     val conf = new SparkConf().setAppName("Charmander-Nessy")
     val sc = new SparkContext(conf)
@@ -60,7 +70,7 @@ object SmartScaling {
 
          if(!twoServersUp && shouldScaleUp(rdd)){  //Naive DDos detection: in_bytes>out_bytes for more than 5 cases
           println("Should Scale Up dns-sl3")
-          val data= scala.io.Source.fromFile("/files/dns-sl3.json").mkString
+          val data= scala.io.Source.fromFile(jsonDir+"/dns-sl3.json").mkString
           println(Http("http://172.31.1.11:7075/client/task").postData(data).header("content-type", "application/json").asString)
           twoServersUp = true
         }

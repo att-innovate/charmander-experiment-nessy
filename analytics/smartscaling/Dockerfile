@@ -64,6 +64,7 @@ ENV PATH $PATH:$SPARK_HOME/bin:/usr/python/bin/
 
 # Install maxusage
 ENV SMART_SCALING_DIR /smartscaling
+ENV JSON_DIR /files
 
 RUN mkdir -p $SMART_SCALING_DIR/src
 RUN mkdir -p $SMART_SCALING_DIR/project
@@ -74,7 +75,7 @@ ADD lib/ $SMART_SCALING_DIR/lib
 
 COPY build.sbt $SMART_SCALING_DIR/
 COPY project/assembly.sbt $SMART_SCALING_DIR/project/
-COPY files/dns-sl3.json /files/
+COPY files/dns-sl3.json $JSON_DIR/
 
 RUN cd $SMART_SCALING_DIR && sbt assembly
 
@@ -82,7 +83,7 @@ RUN cd $SMART_SCALING_DIR && sbt assembly
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENTRYPOINT cd $SMART_SCALING_DIR && spark-submit --class SmartScaling --master local[*] target/scala-2.10/smartscaling-assembly-1.0.jar
+ENTRYPOINT cd $SMART_SCALING_DIR && spark-submit --class SmartScaling --master local[*] target/scala-2.10/smartscaling-assembly-1.0.jar --jsonDir $JSON_DIR
 
 
 
