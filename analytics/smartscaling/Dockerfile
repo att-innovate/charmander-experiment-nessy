@@ -62,7 +62,7 @@ RUN sed 's/^\(log4j.rootCategory=\)INFO\(, console\)$/\1ERROR\2/' \
 ENV PATH $PATH:$SPARK_HOME/bin:/usr/python/bin/
 
 
-# Install maxusage
+# Install smartscaling
 ENV SMART_SCALING_DIR /smartscaling
 ENV JSON_DIR /files
 
