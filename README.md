@@ -17,7 +17,6 @@ c) Identifying & training & updating the appropriate machine learning model
 d) (Not fully implemented yet) Processing data collected from DNS servers with learned model and providing intelligent suggestions to scheduler
 
 
-![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/Nessy_Implementation.jpg?raw=true)
 
 
 1. [Set Up Nessy in Charmander Environment][1]
@@ -26,19 +25,27 @@ d) (Not fully implemented yet) Processing data collected from DNS servers with l
     - Reload and reset environment
 
 2. [Build analyzers, vector and Nessy] [2] 
+    
+    - Build and configure the containers for nessy experiemnt
+    - Build analytics, datacollectors and vector
 
+Now, it is time to run and play with it! 
 
-3. Time to run a script or manually start some loads to observe the performance
+First, Open the [Mesos](http://172.31.1.11:5050/#/) to check tasks that are actively running.
 
+Then, open up[Vector](http://http://172.31.2.11:31790/#/?host=slave2&hostspec=localhost) to see the metrics collected from DNS server on slave2.
 
-Of course, we have provided some written scripts for you. They will automatically set up everything and includes some normalloads and one DDos attack to the DNS server. 
-#Note:it does not include smartscaling#
+#### Run a script we provide to check what different load patterns will affect the DNS server
+
+These scripts will automatically set up everything and run some normalloads and DDos attacks to the DNS server. 
+Note:it does not include smartscaling.
 
     ./experiments/nessy/bin/script_2min
     ./experiments/nessy/bin/script_120min
+    .....
 
 
-Alternatively, you can run every step manuelly. Follow the steps below:
+#### Alternatively, you can run every step manuelly. Follow the steps below:
 
 #### Start Vector and Analytics-Stack
   
@@ -48,8 +55,6 @@ Alternatively, you can run every step manuelly. Follow the steps below:
 #### Start DNS server on slave2
 
     ./experiments/nessy/bin/start_dns-sl2
-
-Now, you can open the [Mesos](http://172.31.1.11:5050/#/) to check active containers and [Vector](http://http://172.31.2.11:31790/#/?host=slave2&hostspec=localhost) to see the metrics collected from DNS server on slave2.
 
 
 #### Start smartscaling 
@@ -74,7 +79,7 @@ After a while, you can put on a heavier load on the server. Say, 300 more users.
 At this point, you should see in Vector that the network throughput of the DNS server goes up quickly when serving 500 users. Soon, you would observe in Mesos that another DNS server in slave 3 (dns-sl3) appears. It is scaled up by scheduler according to the smartscaling, and it will take over about half of the load from the previous server. You can also check the metrics for this new DNS server on [Vector](http://172.31.2.11:31790/#/?host=slave3&hostspec=localhost)
 
 
-You can now kill the 300 users.
+#### You can now kill the 300 users.
 
     ./bin/kill_task normalload-u100
 
