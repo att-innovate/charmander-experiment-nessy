@@ -34,7 +34,8 @@ object SmartScaling {
     val high_ave_in = 30000
     val high_ave_out = 60000
 
-    val low_ave_in = 15000
+    //val low_ave_in = 15000
+    val low_ave_in = 17000
 
     var twoServersUp = false
     var ddosRecognized = false
@@ -66,8 +67,8 @@ object SmartScaling {
         }
 
         if(isDDOS(rdd)){
-          println("DDos Attack. Shutting down bonesi-500")
-          println(Http("http://172.31.1.11:7075/client/task/bon").method("DELETE").asString)
+          //println("DDos Attack. Shutting down bonesi-500")
+          //println(Http("http://172.31.1.11:7075/client/task/bon").method("DELETE").asString)
         }
 
 
@@ -94,7 +95,7 @@ object SmartScaling {
       val (col, rdd) =  CharmanderUtils.getRDDAndColumnsForQuery(sc,CharmanderUtils.VECTOR_DB,"select network_in_bytes,network_out_bytes from network where interface_name='eth1' AND hostname='slave2' limit 5 ")
       rddQueue += rdd
 
-      Thread.sleep(10000)
+      Thread.sleep(5000)
     }
 
   }
