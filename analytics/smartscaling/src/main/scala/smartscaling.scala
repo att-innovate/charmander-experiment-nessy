@@ -37,12 +37,13 @@ object SmartScaling {
   val shedulerAPI_addr = "http://172.31.1.11:7075/client/task"
   val shedulerAPI_bonesi_addr = shedulerAPI_addr + "/bonesi"
   val shedulerAPI_dns3_addr = shedulerAPI_addr + "/dns-sl3"
-  val num_tolerate = 2
 
+  val default_jsonDir = "/files"
+
+  val num_tolerate = 2
   val default_low_in = 17000
   val default_high_in = 30000
   val default_ratio_inout = 0.6
-  val default_jsonDir = "/files"
   val default_baseline = 10000
 
   var low_in = default_low_in
