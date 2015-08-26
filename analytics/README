@@ -1,15 +1,35 @@
-Copy this whole smartscaling folder into your spark-1.4.1 folder
+SmartScaling is the intelligence piece of Project Nessy. It streams rdd data from the DNS 
+servers and runs analysis on the rdd data to identify whether the system needs to scale up,
+scale down, or react to the DDoS attack. Here we have provided a simple implementation of auto-scaling and DDoS detection. It can be easily plugined with your own implementation.
+
+To develop your own auto-scaling policy or DDoS detection, follow the following instructions:
 
 
-Make sure you have installed the sbt assembly (https://github.com/sbt/sbt-assembly)
+1) Copy the whole smartscaling folder into your spark folder
 
-To start a interactive shell:
+2) Installed the sbt assembly (Please refer to https://github.com/sbt/sbt-assembly)
 
-	../bin/spark-shell --jars $(echo ./lib/*.jar | tr ' ' ',')
+3) To start a interactive shell to play around with the scalaj and CharmanderUtils:
 
-To start a program:
+		../bin/spark-shell --jars $(echo ./lib/*.jar | tr ' ' ',')
 
-(Make sure you have installed the sbt assembly (https://github.com/sbt/sbt-assembly))
+   Inside the spark-shell:
+   		>>> import scalaj.http._
+   		>>> import org.att.charmander.CharmanderUtils
+   		>>> ......(your own code)
+
+4) Then you might wish to make changes in the smartscaling script. 
+		
+		cd ./src/main/scala
+
+	Open smartscaling.scala in your favorite editor. 
+	In code, it should be clear how data is streamed and processed by some simple functions That has been built for you, and you can replace the isDDoS, shouldScaleUp, shouldScaleDown fuctions with your own.
+
+5) To compile your own smartscaling.scala:
 
 	sbt assembly
-	../bin/spark-submit --class "MaxUsage" --master local[*] ./target/scala-2.10/spark-experiment-assembly-1.0.jar
+
+6)	To run the program, you should set the -jsonDir to be your own path. 
+	Optionally, you can also set up the threshold for low_in (lowest network_in_byte), high_in, ratio_inout(ratio of network_in_byte over network_outbyte):
+
+	./bin/spark-submit --class "SmartScaling" --master local[*]  $YOUR_SPARK_FOLDER/smartscaling/target/scala-2.10/smartscaling-assembly-1.0.jar --jsonDir $YOUR_SPARK_FOLDER/files/  

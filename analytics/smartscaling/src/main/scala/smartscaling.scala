@@ -1,3 +1,24 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2014 AT&T
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 import scala.collection.mutable
 import org.apache.spark.{SparkConf, SparkContext}
@@ -12,11 +33,9 @@ import scalaj.http._
 
 /* SmartScaling
  * -------------------
- * SmartScaling is the intelligence piece of Project Nessy. It streams rdd data from the DNS 
- * servers and runs analysis on the rdd data to identify whether the system needs to scale up,
- * scale down, or react to the DDoS attack.
  *
- * To edit the json path for the container runnign SmartScaling, you can specify --jsonDir
+ * To edit the json path for the container runnign SmartScaling, you can specify 
+ *  --jsonDir
  *
  * To change the auto-scaling policy and DDoS detection, you can specify these following thresholds:
  *  --high_in: if we observe network_in_byte to be larger than high_in, we call the schdeule to spin up
@@ -34,15 +53,16 @@ object SmartScaling {
   val usage = """
     Usage: SmartScaling [--jsonDir dirname] [--low_in num] [--high_in num] [--baseline num] [--ratio_inout double]
   """
-  val shedulerAPI_addr = "http://172.31.1.11:7075/client/task"
-  val shedulerAPI_bonesi_addr = shedulerAPI_addr + "/bonesi"
-  val shedulerAPI_dns3_addr = shedulerAPI_addr + "/dns-sl3"
-  val num_tolerate = 2
+  val schedulerAPI_addr = "http://172.31.1.11:7075/client/task"
+  val schedulerAPI_bonesi_addr = schedulerAPI_addr + "/bonesi"
+  val schedulerAPI_dns3_addr = schedulerAPI_addr + "/dns-sl3"
+  
+  val default_jsonDir = "/files"
 
+  val num_tolerate = 2
   val default_low_in = 17000
   val default_high_in = 30000
   val default_ratio_inout = 0.6
-  val default_jsonDir = "/files"
   val default_baseline = 10000
 
   var low_in = default_low_in
@@ -85,16 +105,16 @@ object SmartScaling {
 
   //Commands sent to schedulers
   def killDDoS () { 
-    println(Http(shedulerAPI_bonesi_addr).method("DELETE").asString)
+    println(Http(schedulerAPI_bonesi_addr).method("DELETE").asString)
   }
   
   def startNewDNS () {
     val data= scala.io.Source.fromFile(jsonDir+"/dns-sl3.json").mkString
-    println(Http(shedulerAPI_addr).postData(data).header("content-type", "application/json").asString)           
+    println(Http(schedulerAPI_addr).postData(data).header("content-type", "application/json").asString)           
   }
 
   def shutDownDNS () {
-    println(Http(shedulerAPI_dns3_addr).method("DELETE").asString)
+    println(Http(schedulerAPI_dns3_addr).method("DELETE").asString)
   }
 
   // Main workflow: streaming data 
