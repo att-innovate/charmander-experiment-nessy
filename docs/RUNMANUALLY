@@ -1,0 +1,67 @@
+Run all tasks manually 
+----------------------
+
+#### Start Vector and Analytics-Stack
+  
+    ./bin/start_analytics
+    ./bin/start_vector
+
+#### Start DNS server on slave2
+
+    ./experiments/nessy/bin/start_dns-sl2
+
+
+#### Start smartscaling 
+Smartscaling is the machine intelligence pieve that implements autoscaling and DDos detection. After set up, smartscaling will tell Charmander scheduler to spin up /shut down another DNS server on demand. It can also kill the DDoS attack once detected.
+
+	
+	 ./experiments/nessy/bin/start_smartscaling
+
+Then, open the [Mesos](http://172.31.1.11:5050/#/) to check tasks that are actively running. It should look like this:
+
+![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/MesosExp.jpg?raw=true)
+
+
+To see the data generated on run-time, open the [Vector](http://http://172.31.2.11:31790/#/?host=slave2&hostspec=localhost) to observe the metrics collected from DNS server on slave2.
+
+
+
+
+#### Start Normal Load Emulation with various loads
+This will start a load emulation where 200 users simutanously send queries to the DNS server in a random pattern, for example, normal load of 200 users
+
+    ./experiments/nessy/bin/start_normalload-u200
+
+
+After a while, you can put on a heavier load on the server. Say, 300 more users.
+    
+    ./experiments/nessy/bin/start_normalload-u100
+    ./experiments/nessy/bin/start_normalload-u100
+    ./experiments/nessy/bin/start_normalload-u100
+
+At this point, you should see in Vector that the network throughput of the DNS server goes up quickly when serving 500 users. Soon, you would observe in Mesos that another DNS server in slave 3 (dns-sl3) appears. It is scaled up by scheduler according to the smartscaling, and it will take over about half of the load from the previous server. You can also check the metrics for this new DNS server on [Vector](http://172.31.2.11:31790/#/?host=slave3&hostspec=localhost)
+
+
+#### You can now kill the 300 users.
+
+    ./bin/kill_task normalload-u100
+
+Soon, you will observe that dns-sl3 disappears, being shut down by schedule as smartscaling realize that we don't need two servers runnning to serve only 200 users. Now, you should observe in Vector that network throughput of dns-sl2 will go down first (#due to lowered users traffic#) and then goes up a little bit (#take over all the load from dns-sl3#).
+
+#### While Normal Load is running, you can also start a DDos attack.
+
+This will start a Bonesi DDos attack to the DNS server. ([Bonesi](https://github.com/markus-go/bonesi) is an open-source botnet simulator developed by Markus Goldstein.)
+
+    ./experiments/nessy/bin/start_bonesi-500
+    
+This will put a lot of load on the network of DNS server. However, smartscaling should be able to detect it is an attack rather than a scaling-up situation. THen you should be observing the bonesi-500 being killed and the network throughput returns normal.
+
+#### Now let's check the data collected from InfluxDB
+
+// to be implemented
+
+ 
+
+#### That's it, let's clean up
+
+    ./bin/reset_cluster

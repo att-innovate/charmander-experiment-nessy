@@ -99,7 +99,8 @@ object SmartScaling {
 
   def shouldScaleDown(rdd: RDD[List[BigDecimal]]): Boolean=
   {
-      rdd.filter(value => network_in(value) < low_in && network_in(value) > baseline).count > num_tolerate
+      //rdd.filter(value => network_in(value) < low_in && network_in(value) > baseline).count > num_tolerate
+      rdd.filter(value => network_in(value) < low_in).count > num_tolerate
   }
 
 
