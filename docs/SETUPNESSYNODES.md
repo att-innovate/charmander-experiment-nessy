@@ -4,13 +4,13 @@ Set Up Nessy in Charmander Environment
 ![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/Nessy_Implementation.jpg?raw=true)
 
 #### Step 1 - Install Charmander
-If you have already have a Charmander set up, the 4-node charmander cluser will need to be reconstructed into a 5-node cluster to run Nessy. You will need to do:
+If you have already have a Charmander environment set up, the 4-node charmander cluser will need to be reconstructed into a 5-node cluster to run Nessy. You will need to destroy the original cluster:
 
 	vagrant -y destroy
 
-Then skip the following and go directlly to Step 2.
+Go to Step 2 after destroying it.
 
-Otherwise, a Charmander cluster needs to be first up and running before we install Nessy. In your working directory:
+Otherwise, you will need to install a Charmander cluster first. In your working directory:
 
     git clone https://github.com/att-innovate/charmander.git
 
