@@ -4,17 +4,17 @@ Charmander-Experiment: Nessy
 Nessy is an experiment that runs on the Charmander Lab Platform that performs the dynamic orchestration of DNS servers and detection of DDoS Attack. 
 
 
-![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/Nessy.jpg?raw=true)
+![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/Nessy.jog?raw=true)
 
 
 #### Main features of Nessy:
-    - Allow for a dynamic orchestration of containerized DNS servers (configured with Bind9 services) 
+ - Allow for a dynamic orchestration of containerized DNS servers (configured with Bind9 services) 
     
-    - Generating the necessary training data sets by implementing load generators for both normal user load & DDoS traffic patterns
+ - Generating the necessary training data sets by implementing load generators for both normal user load & DDoS traffic patterns
     
-    - Processing the streamed data and applying a simple algorithm for auto-scaling and DDoS detection.
+ - Processing the streamed data and applying a simple algorithm for auto-scaling and DDoS detection.
     
-#### Step by step Instruction:
+#### Step by step Instructions:
 
 1. [Set Up Nessy in Charmander Environment][1]
 

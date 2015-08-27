@@ -14,7 +14,7 @@ You will need to wait for some time to ensure all containers are up and running,
 
 Then, open the [Mesos](http://172.31.1.11:5050/#/) to check tasks that are actively running. It should look like this:
 
-![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/MesosExp.jpg?raw=true)
+![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/MesosExp.png?raw=true)
 
 
 If you wish to see the data generated on run-time, open the [Vector](http://http://172.31.2.11:31790/#/?host=slave2&hostspec=localhost) to observe the metrics collected from DNS server on slave2.
