@@ -55,4 +55,4 @@ To clean up the experiment, just run inside charmander folder
 [2]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/BUILDNESSY.md
 [3]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/RUNSCRIPT.md
 [4]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/RUNMANUALLY.md
-[5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/README
+[5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/

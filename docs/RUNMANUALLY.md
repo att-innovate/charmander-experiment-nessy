@@ -90,4 +90,4 @@ If you wish, you can further implement the codes you plays with in spark-shell i
 [2]: http://172.31.1.11:5050/#/
 [3]: http://172.31.2.11:31790/#/?host=slave3&hostspec=localhost
 [4]: https://github.com/att-innovate/charmander-spark/blob/master/src/main/scala/org/att/charmander/CharmanderUtils.scala
-[5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/README
+[5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/
