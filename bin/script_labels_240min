@@ -95,16 +95,20 @@ do
 	outputToCsv
 
 	sleep 120 	#0:17
-	date
-	./experiments/nessy/bin/start_bonesi-500
-	DDOS=1
-	outputToCsv
+	if [ $(($RANDOM%2)) -eq 0 ]; then
+		date
+		./experiments/nessy/bin/start_bonesi-500
+		DDOS=1
+		outputToCsv
 
-	sleep 120 	#0:19
-	date
-	./bin/kill_task bonesi
-	DDOS=0
-	outputToCsv
+		sleep 120 	#0:19
+		date
+		./bin/kill_task bonesi
+		DDOS=0
+		outputToCsv
+	else
+		sleep 120 	#0:19
+	fi
 
 	sleep 120	#0:21
 	date
@@ -113,10 +117,12 @@ do
 	outputToCsv
 
 	sleep 180	#0:24
-	date
-	./experiments/nessy/bin/start_normalload-u100
-	let "NUM_USERS = $NUM_USERS+100"
-	outputToCsv
+	if [ $(($RANDOM%2)) -eq 0 ]; then
+		date
+		./experiments/nessy/bin/start_normalload-u100
+		let "NUM_USERS = $NUM_USERS+100"
+		outputToCsv
+	fi
 
 	sleep 120	#0:26
 	date
@@ -125,10 +131,12 @@ do
 	outputToCsv
 
 	sleep 60 	#0:27
-	date
-	./experiments/nessy/bin/start_normalload-u200
-	let "NUM_USERS = $NUM_USERS+200"
-	outputToCsv
+	if [ $(($RANDOM%2)) -eq 0 ]; then
+		date
+		./experiments/nessy/bin/start_normalload-u200
+		let "NUM_USERS = $NUM_USERS+200"
+		outputToCsv
+	fi
 
 	sleep 60 	#0:28
 	date
