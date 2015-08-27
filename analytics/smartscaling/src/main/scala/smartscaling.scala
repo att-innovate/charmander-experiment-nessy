@@ -53,21 +53,12 @@ object SmartScaling {
   val usage = """
     Usage: SmartScaling [--jsonDir dirname] [--low_in num] [--high_in num] [--baseline num] [--ratio_inout double]
   """
-<<<<<<< HEAD
   val schedulerAPI_addr = "http://172.31.1.11:7075/client/task"
   val schedulerAPI_bonesi_addr = schedulerAPI_addr + "/bonesi"
   val schedulerAPI_dns3_addr = schedulerAPI_addr + "/dns-sl3"
   
   val default_jsonDir = "/files"
 
-=======
-  val shedulerAPI_addr = "http://172.31.1.11:7075/client/task"
-  val shedulerAPI_bonesi_addr = shedulerAPI_addr + "/bonesi"
-  val shedulerAPI_dns3_addr = shedulerAPI_addr + "/dns-sl3"
-
-  val default_jsonDir = "/files"
-
->>>>>>> e0dff0200a3ec5523a4f6eea3dd85ea853601edd
   val num_tolerate = 2
   val default_low_in = 17000
   val default_high_in = 30000
@@ -108,7 +99,7 @@ object SmartScaling {
 
   def shouldScaleDown(rdd: RDD[List[BigDecimal]]): Boolean=
   {
-      //rdd.filter(value => network_in(value) < low_in && network_in(value) > baseline).count > num_tolerate
+      //This makes scaling down not working rdd.filter(value => network_in(value) < low_in && network_in(value) > baseline).count > num_tolerate
       rdd.filter(value => network_in(value) < low_in).count > num_tolerate
   }
 

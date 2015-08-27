@@ -4,7 +4,7 @@ Charmander-Experiment: Nessy
 Nessy is an experiment that runs on the Charmander Lab Platform that performs the dynamic orchestration of DNS servers and detection of DDoS Attack. 
 
 
-![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/Nessy.jog?raw=true)
+![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/Nessy.jpg?raw=true)
 
 
 #### Main features of Nessy:
@@ -44,9 +44,15 @@ Nessy is an experiment that runs on the Charmander Lab Platform that performs th
     - You can plugin your own code for auto-scaling and DDoS attack
 
 
+To clean up the experiment, just run inside charmander folder
+
+    ./bin/reset_cluster
+
+
+
 
 [1]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/SETUPNESSYNODES.md
 [2]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/BUILDNESSY.md
 [3]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/RUNSCRIPT.md
 [4]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/RUNMANUALLY.md
-[5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/README.md
+[5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/README

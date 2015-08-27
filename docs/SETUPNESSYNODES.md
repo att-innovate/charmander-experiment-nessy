@@ -36,3 +36,10 @@ Verify that you are in your local Charmander directory and reset the Charmander 
     ./bin/reset_cluster
 
 Verify that no task is running using the Mesos console at [http://172.31.1.11:5050](http://172.31.1.11:5050)
+
+
+
+Next step: [Build analyzers, vector and Nessy] [2] 
+
+
+[2]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/BUILDNESSY.md

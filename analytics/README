@@ -34,6 +34,14 @@ To develop your own auto-scaling policy or DDoS detection, follow the following 
 	sbt assembly
 
 6.	To run the program, you should set the -jsonDir to be your own directory that stores the json file.
+
 	Optionally, you can also set up the threshold for low_in (lowest network_in_byte), high_in, ratio_inout(ratio of network_in_byte over network_outbyte) and baseline (below which there won't be any scaling up/down on the dns server):
 
 	./bin/spark-submit --class "SmartScaling" --master local[*]  $YOUR_SPARK_FOLDER/smartscaling/target/scala-2.10/smartscaling-assembly-1.0.jar --jsonDir $YOUR_SPARK_FOLDER/files/  [optional: --high_in --low_in --baseline]
+
+7. Containerize your own smartscaling
+	copy all of your code back into the YOUR_CHARMANDER_FOLDER/experiments/nessy/analytics/
+
+	You can rename it as long as you change the json file and Dockerfile
+
+And now you can go back to [Build analyzers, vector and Nessy] [2] to rebuild Nessy
