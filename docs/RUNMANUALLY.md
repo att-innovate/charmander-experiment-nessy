@@ -1,5 +1,6 @@
 Run Tasks manually 
-----------------------
+------------------
+
 
 #### Start Vector and Analytics-Stack
   
@@ -11,21 +12,21 @@ Run Tasks manually
     ./experiments/nessy/bin/start_dns-sl2
 
 
-#### Start smartscaling 
-Smartscaling is the machine intelligence pieve that implements autoscaling and DDos detection. After set up, smartscaling will tell Charmander scheduler to spin up /shut down another DNS server on demand. It can also kill the DDoS attack once detected.
-	
-	 ./experiments/nessy/bin/start_smartscaling
-
-Then, open the [Mesos][2] to check tasks that are actively running. It should look like this:
+Open the [Mesos][2] to check tasks are all actively running. It should have all the tasks listed (order does not matter) shown in this picture:
 
 ![image](https://github.com/att-innovate/charmander-experiment-nessy/blob/master/docs/MesosExp.png?raw=true)
 
-
 To see the data generated on run-time, open the [Vector][3] to observe the metrics collected from DNS server on slave2.
 
+#### Start smartscaling 
+Smartscaling is the machine intelligence piece that implements auto-scaling and DDoS detection.It will tell Charmander scheduler to spin up /shut down another DNS server on demand. It can also kill the DDoS attack once detected.
+	
+	 ./experiments/nessy/bin/start_smartscaling
 
-#### Increase traffic 
-This will start a load emulation where 200 users simutanously send queries to the DNS server in a random pattern, for example, normal load of 200 users
+
+#### Add more traffic to DNS server
+
+Start a load emulation where multiple threads simutanously send queries to the DNS server in a random pattern. For example, add normal load of 200 users.
 
     ./experiments/nessy/bin/start_normalload-u200
 
@@ -36,13 +37,14 @@ After a while, you can put on a heavier load on the server. Say, 300 more users.
     ./experiments/nessy/bin/start_normalload-u100
     ./experiments/nessy/bin/start_normalload-u100
 
-At this point, you should see in Vector that the network throughput of the DNS server goes up quickly when serving 500 users. 
+At this point, you should see in [Vector][6] that the network throughput of the DNS server increases quickly since it is now serving 500 users. 
 
-Soon, you would observe in Mesos that another DNS server in slave 3 (dns-sl3) appears. It is scaled up by scheduler according to the smartscaling, and it will take over about half of the load from the previous server. 
+Soon, you would observe in [Mesos][2] that a task called dns-sl3 (another DNS server in slave 3node ) appears. It is called up by smartscaling when it observe the overly heavy load. dns-sl3 will take over about half of the load from the dns-sl2.
+
 You can also check the metrics for this new DNS server on [Vector][3]
 
 
-#### Lowering the traffic
+#### Lowering the traffic on DNS server
 
     ./bin/kill_task normalload-u100
 
@@ -61,7 +63,8 @@ This will put a lot of load on the network of DNS server, which might first appe
 You will see in [Mesos][2] that the bonesi-500 being killed and in Vector that the network throughput returns normal.
 
 
-####Collect and Explore the data
+#### Collect and Explore the data
+
 When the script complets, you can collect all the data it generated from InfluxDB into a csv file by querying from Spark. (InfluxDB itself does not provide csv conversion)
 In your SPARK_FOLDER, run:
 
@@ -91,3 +94,4 @@ If you wish, you can further implement the codes you plays with in spark-shell i
 [3]: http://172.31.2.11:31790/#/?host=slave3&hostspec=localhost
 [4]: https://github.com/att-innovate/charmander-spark/blob/master/src/main/scala/org/att/charmander/CharmanderUtils.scala
 [5]: https://github.com/att-innovate/charmander-experiment-nessy/blob/master/analytics/
+[6]: http://172.31.2.11:31790/#/?host=slave2&hostspec=localhost

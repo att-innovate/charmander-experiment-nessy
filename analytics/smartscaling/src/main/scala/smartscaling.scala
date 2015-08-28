@@ -99,11 +99,14 @@ object SmartScaling {
 
   def shouldScaleDown(rdd: RDD[List[BigDecimal]]): Boolean=
   {
-      //This makes scaling down not working rdd.filter(value => network_in(value) < low_in && network_in(value) > baseline).count > num_tolerate
       rdd.filter(value => network_in(value) < low_in).count > num_tolerate
   }
 
+  def belowBaseline(rdd: RDD[List[BigDecimal]]): Boolean=
+  {
+      rdd.filter(value => network_in(value) < baseline).count > num_tolerate
 
+  }
   //Commands sent to schedulers
   def killDDoS () { 
     println(Http(schedulerAPI_bonesi_addr).method("DELETE").asString)
@@ -138,27 +141,33 @@ object SmartScaling {
 
     // Constantly analyzing streamed data, recognize situations and send relative commands to scheduler
     inputStream.foreachRDD(rdd => {
+      
       if (rdd.count != 0) {
         println("dns-sl2")
         rdd.foreach(println)
 
-        if(isDDOS(rdd)){
-          println("DDos Attack. Shutting down bonesi-500")
-          killDDoS()
+        if(!belowBaseline(rdd) || twoServersUp)) {
+          
+          if(isDDOS(rdd)){
+            println("DDos Attack. Shutting down bonesi-500")
+            killDDoS()
+          }
+
+          if(!twoServersUp && shouldScaleUp(rdd)){
+            println("Should Scale Up dns-sl3")
+            startNewDNS()
+            twoServersUp = true
+          }
+
+          if(twoServersUp && shouldScaleDown(rdd)){
+            println("Should Scale Down and shut down dns-sl3")
+            shutDownDNS()
+            twoServersUp = false
+          }
+
         }
 
-        if(!twoServersUp && shouldScaleUp(rdd)){
-          println("Should Scale Up dns-sl3")
-          startNewDNS()
-          twoServersUp = true
-        }
-
-        if(twoServersUp && shouldScaleDown(rdd)){
-          println("Should Scale Down and shut down dns-sl3")
-          shutDownDNS()
-          twoServersUp = false
-        }
-
+        
       }
     })
 
