@@ -146,7 +146,7 @@ object SmartScaling {
         println("dns-sl2")
         rdd.foreach(println)
 
-        if(!belowBaseline(rdd) || twoServersUp)) {
+        if(!belowBaseline(rdd) || twoServersUp) {
           
           if(isDDOS(rdd)){
             println("DDos Attack. Shutting down bonesi-500")
