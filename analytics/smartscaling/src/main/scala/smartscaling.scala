@@ -151,15 +151,11 @@ object SmartScaling {
           if(isDDOS(rdd)){
             println("DDos Attack. Shutting down bonesi-500")
             killDDoS()
-          }
-
-          if(!twoServersUp && shouldScaleUp(rdd)){
+          } else if(!twoServersUp && shouldScaleUp(rdd)){
             println("Should Scale Up dns-sl3")
             startNewDNS()
             twoServersUp = true
-          }
-
-          if(twoServersUp && shouldScaleDown(rdd)){
+          } else if(twoServersUp && shouldScaleDown(rdd)){
             println("Should Scale Down and shut down dns-sl3")
             shutDownDNS()
             twoServersUp = false
