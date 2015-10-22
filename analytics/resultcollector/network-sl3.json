@@ -1,0 +1,8 @@
+{
+    "id":          "network-sl3",
+    "dockerimage": "resultcollector",
+    "mem":         "20",
+    "sla":         "singleton",
+    "nodetype":    "analytics",
+    "arguments":   ["-db", "charmander-dc", "-query", "select * from network where hostname='slave3'", "-name", "network-sl3", "-dir", "/vagrant/experiments/nessy/results"]
+}

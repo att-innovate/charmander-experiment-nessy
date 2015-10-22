@@ -8,3 +8,6 @@ target
 
 # binaries
 traffic/normalload/normalload
+
+# results
+*.csv
