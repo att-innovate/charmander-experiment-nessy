@@ -51,7 +51,7 @@ object ResultCollector {
     if (args.contains("-name")) resultname = args(getFlagIndex("-name"))
     if (args.contains("-dir")) dir = args(getFlagIndex("-dir"))
 
-    println("Cmdline Arguments: db: " + database + ", query: " + query + ", resultname: " + resultname)
+    println("Cmdline Arguments: db: " + database + ", query: " + query + ", resultname: " + resultname + ", dir: " + dir)
   }
 
   def sendQueryToInfluxDB(databaseName: String, query: String): String = try {
