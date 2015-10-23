@@ -2,7 +2,7 @@
 
 NUM_USERS=0
 DDOS=0
-CSV_FILE=logfile.csv
+CSV_FILE=./experiments/nessy/results/$(date +%Y%m%d%H%M)-logfile.csv
 
 
 function outputToCsv(){
@@ -155,4 +155,9 @@ done
 sleep 5
 ./bin/kill_task datacoll
 
-read -p " When finish collecting data, press any key to quit simulation......."
+sleep 5
+./experiments/nessy/bin/get_network-results-sl2
+sleep 5
+./experiments/nessy/bin/get_dns-results-sl2
+
+echo "results available in ./experiments/nessy/results/"
