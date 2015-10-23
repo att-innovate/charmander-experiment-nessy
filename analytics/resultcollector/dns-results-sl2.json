@@ -1,0 +1,15 @@
+{
+    "id":          "dns-results-sl2",
+    "dockerimage": "resultcollector",
+    "mem":         "100",
+    "sla":         "singleton",
+    "nodetype":    "analytics",
+    "volumes": [
+        {
+            "host_path":"/vagrant/experiments/nessy/results",
+            "container_path":"/results",
+            "mode":"rw"
+        }
+    ],
+    "arguments":   ["-db", "charmander-dc", "-query", "select * from stats where hostname = 'slave2' and container_name =~ /dns-sl*/ ", "-name", "dns-sl2", "-dir", "/results"]
+}
