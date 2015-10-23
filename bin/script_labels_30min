@@ -2,8 +2,7 @@
 
 NUM_USERS=0
 DDOS=0
-CSV_FILE=./experiments/nessy/results/$(date +%Y%m%d%H%M)-logfile.csv
-
+CSV_FILE=./experiments/nessy/results/$(date -u +%Y%m%d%H%M)-logfile.csv
 
 function outputToCsv(){
 	echo $(date +%s),$NUM_USERS,$DDOS >> $CSV_FILE
@@ -11,9 +10,8 @@ function outputToCsv(){
 
 
 ./bin/reset_cluster
-rm $CSV_FILE
 
-sleep 10
+sleep 15
 
 echo "Start Vector"
 ./bin/start_vector
@@ -22,12 +20,8 @@ echo "Start analytics"
 echo "Start DNS server"
 ./experiments/nessy/bin/start_dns-sl2
 
-sleep 10
+sleep 45
  
-echo " "
-echo "Now you can open Vector and InfluxDB."
-read -p " When everything is ready, press any key to start simulation......."
-
 date
 ./experiments/nessy/bin/start_normalload-u30
 let "NUM_USERS = $NUM_USERS+30"

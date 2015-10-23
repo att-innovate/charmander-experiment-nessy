@@ -1,19 +1,19 @@
 #!/bin/bash
 
 NUM_USERS=0
-DDOS=0
-CSV_FILE=./experiments/nessy/results/$(date +%Y%m%d%H%M)-logfile.csv
+DDOS_2=0
+DDOS_3=0
+CSV_FILE=./experiments/nessy/results/$(date -u +%Y%m%d%H%M)-logfile.csv
 
 
 function outputToCsv(){
-	echo $(date +%s),$NUM_USERS,$DDOS >> $CSV_FILE
+	echo $(date +%s),$NUM_USERS,$DDOS_2,$DDOS_3 >> $CSV_FILE
 }
 
 
 ./bin/reset_cluster
-rm $CSV_FILE
 
-sleep 10
+sleep 15
 
 echo "Start Vector"
 ./bin/start_vector
@@ -24,12 +24,8 @@ echo "Start DNS server sl2"
 echo "Start DNS server sl3"
 ./experiments/nessy/bin/start_dns-sl3
 
-sleep 10
+sleep 45
  
-echo " "
-echo "Now you can open Vector and InfluxDB."
-read -p " When everything is ready, press any key to start simulation......."
-
 date
 ./experiments/nessy/bin/start_normalload-u200
 let "NUM_USERS = $NUM_USERS+200"
@@ -53,7 +49,7 @@ outputToCsv
 sleep 120  	#0:08
 date
 ./experiments/nessy/bin/start_bonesi-200-sl2
-DDOS=1
+DDOS_2=1
 outputToCsv
 
 sleep 60  	#0:09
@@ -65,7 +61,7 @@ outputToCsv
 sleep 60 	#0:10
 date
 ./bin/kill_task bonesi
-DDOS=0
+DDOS_2=0
 outputToCsv
 
 sleep 120 	#0:12
@@ -82,13 +78,13 @@ outputToCsv
 sleep 60 	#0:13
 date
 ./experiments/nessy/bin/start_bonesi-200-sl3
-DDOS=1
+DDOS_3=1
 outputToCsv
 
 sleep 120 	#0:15
 date
 ./bin/kill_task bonesi
-DDOS=0
+DDOS_3=0
 outputToCsv
 date
 ./bin/kill_task normalload-u100
@@ -98,13 +94,13 @@ outputToCsv
 sleep 120 	#0:17
 date
 ./experiments/nessy/bin/start_bonesi-200-sl2
-DDOS=1
+DDOS_2=1
 outputToCsv
 
 sleep 120 	#0:19
 date
 ./bin/kill_task bonesi
-DDOS=0
+DDOS_2=0
 outputToCsv
 
 sleep 120	#0:21
@@ -122,7 +118,7 @@ outputToCsv
 sleep 120	#0:26
 date
 ./experiments/nessy/bin/start_bonesi-200-sl3
-DDOS=1
+DDOS_3=1
 outputToCsv
 
 sleep 60 	#0:27
@@ -134,7 +130,7 @@ outputToCsv
 sleep 60 	#0:28
 date
 ./bin/kill_task bonesi
-DDOS=0
+DDOS_3=0
 outputToCsv
 
 sleep 120	#0:30
