@@ -1,5 +1,5 @@
 {
-    "id":          "network-sl3",
+    "id":          "network-results-sl3",
     "dockerimage": "resultcollector",
     "mem":         "100",
     "sla":         "singleton",
