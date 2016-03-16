@@ -10,9 +10,8 @@ Change your working directory back to the root of Charmander and start the build
 
 
 #### Build Analytics
-Next, build Vector and data collector
+Next, build Vector, pcp, and data collector
 
-    cd ..
     ./bin/build_vector
 
 #### Build Nessy
